@@ -17,6 +17,9 @@ jobs:
       - name: Setup uv
         uses: astral-sh/setup-uv@v7
 
+      - name: Setup local model runtime
+        uses: ./.github/actions/setup-llama
+
       - name: Run script
         env:
           ZOTERO_ID: ${{ secrets.ZOTERO_ID }}
@@ -27,12 +30,15 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
           CUSTOM_CONFIG: ${{ vars.CUSTOM_CONFIG }}
+          ARXIV_QUERY: ${{ secrets.ARXIV_QUERY }}
+          MAX_PAPER_NUM: ${{ secrets.MAX_PAPER_NUM }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          LANGUAGE: ${{ vars.LANGUAGE }}
         run: |
           if [ -n "$CUSTOM_CONFIG" ]; then
-            printf "%b\n" "$CUSTOM_CONFIG" > config/custom.yaml
+            printf "%s\n" "$CUSTOM_CONFIG" > config/custom.yaml
           else
             echo "CUSTOM_CONFIG is empty; using repository config/custom.yaml."
           fi
-          echo "Using config/custom.yaml: "
-          cat config/custom.yaml
           uv run src/zotero_arxiv_daily/main.py

@@ -32,6 +32,30 @@
 *Zotero-arXiv-Daily* finds arxiv papers that may attract you based on the context of your Zotero library, and then sends the result to your mailbox📮. It can be deployed as Github Action Workflow with **zero cost**, **no installation**, and **few configuration** of Github Action environment variables for daily **automatic** delivery.
 
 ## ✨ Features
+### Local models in this fork
+
+The repository configuration runs both models on the GitHub Actions CPU runner:
+
+- Relevance ranking: `jinaai/jina-embeddings-v5-text-nano-retrieval`.
+- Chinese summaries and author affiliations: `Qwen3.5-4B-Q4_K_M.gguf` from
+  `unsloth/Qwen3.5-4B-GGUF`, served by a pinned `llama.cpp` build with thinking disabled.
+  No external LLM API key is required for this configuration.
+
+The workflows install the server and cache model weights. The server starts only
+when there are papers to summarize and stops before sending email. For local runs,
+install `llama-server` or set `LLAMA_SERVER` to its executable path.
+
+When `CUSTOM_CONFIG` is empty, the old `ARXIV_QUERY`, `MAX_PAPER_NUM`,
+`SMTP_SERVER`, `SMTP_PORT`, and `LANGUAGE` settings are still honored. `ARXIV_QUERY`
+accepts category codes separated by `+` or commas; its Secret value is used directly
+without printing it. Explicit `CUSTOM_CONFIG` takes precedence over these legacy
+settings. SMTP uses SSL on port 465 and STARTTLS on other ports, without falling
+back to unencrypted authentication.
+
+To verify the real models without fetching Zotero data or sending email, manually
+run **CI** with **model_smoke** enabled. For an external LLM instead, set
+`llm.backend: api` and supply its API settings in `CUSTOM_CONFIG`.
+
 - Totally free! All the calculation can be done in the Github Action runner locally within its quota (for public repo).
 - AI-generated TL;DR for you to quickly pick up target papers.
 - Affiliations of the paper are resolved and presented.

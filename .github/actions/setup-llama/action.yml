@@ -1,0 +1,13 @@
+name: Setup local llama.cpp
+description: Install the pinned CPU server and cache Qwen/Jina weights.
+runs:
+  using: composite
+  steps:
+    - name: Install llama.cpp CPU build
+      shell: bash
+      run: python scripts/install_llama.py "$RUNNER_TEMP/llama-cpp"
+    - name: Cache local models
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/huggingface/hub
+        key: local-models-qwen35-q4km-e87f176-jina-nano-v1
