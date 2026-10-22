@@ -3,6 +3,8 @@ import re
 import glob
 import math
 import smtplib
+import ssl
+from time import sleep
 from collections import Counter
 from email.header import Header
 from email.mime.text import MIMEText
@@ -144,7 +146,7 @@ def send_email(config:DictConfig, html:str):
     receiver = config.email.receiver
     password = config.email.sender_password
     smtp_server = config.email.smtp_server
-    smtp_port = config.email.smtp_port
+    smtp_port = int(config.email.smtp_port)
     def _format_addr(s):
         name, addr = parseaddr(s)
         return formataddr((Header(name, 'utf-8').encode(), addr))
@@ -155,17 +157,41 @@ def send_email(config:DictConfig, html:str):
     today = datetime.datetime.now().strftime('%Y/%m/%d')
     msg['Subject'] = Header(f'Daily arXiv {today}', 'utf-8').encode()
 
-    try:
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-    except Exception as e:
-        logger.debug(f"Failed to use TLS. {e}\nTry to use SSL.")
+    context = ssl.create_default_context()
+    server = None
+    # Retry only connection/login: retrying an ambiguous send could duplicate mail.
+    for attempt in range(3):
         try:
-            server = smtplib.SMTP_SSL(smtp_server, smtp_port)
-        except Exception as e:
-            logger.debug(f"Failed to use SSL. {e}\nTry to use plain text.")
-            server = smtplib.SMTP(smtp_server, smtp_port)
+            if smtp_port == 465:
+                server = smtplib.SMTP_SSL(smtp_server, smtp_port, timeout=30, context=context)
+            else:
+                server = smtplib.SMTP(smtp_server, smtp_port, timeout=30)
+                server.starttls(context=context)
+            server.login(sender, password)
+            break
+        except smtplib.SMTPAuthenticationError:
+            if server is not None:
+                server.close()
+            raise
+        except (smtplib.SMTPServerDisconnected, smtplib.SMTPConnectError, OSError):
+            if server is not None:
+                server.close()
+                server = None
+            if attempt == 2:
+                raise
+            logger.warning("SMTP connection/login interrupted; retrying ({}/3)", attempt + 2)
+            sleep(2 ** attempt)
+        except Exception:
+            if server is not None:
+                server.close()
+            raise
 
-    server.login(sender, password)
-    server.sendmail(sender, [receiver], msg.as_string())
-    server.quit()
+    try:
+        rejected = server.sendmail(sender, [receiver], msg.as_string())
+        if rejected:
+            raise smtplib.SMTPRecipientsRefused(rejected)
+    finally:
+        try:
+            server.quit()
+        except (smtplib.SMTPException, OSError):
+            server.close()

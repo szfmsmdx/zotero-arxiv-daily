@@ -34,6 +34,7 @@ def _base_config():
                 "email.smtp_port=1025",
                 "email.sender_password=test",
                 "llm.api.key=sk-fake",
+                "llm.backend=api",
                 "llm.api.base_url=http://localhost:30000/v1",
                 "llm.generation_kwargs.model=gpt-4o-mini",
                 "reranker.api.key=sk-fake",

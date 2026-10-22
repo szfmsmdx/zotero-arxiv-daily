@@ -133,56 +133,83 @@ def test_send_email_starttls_success(config, monkeypatch):
     assert "text/html" in body
 
 
-def test_send_email_falls_back_to_ssl(config, monkeypatch):
+def test_send_email_port_465_uses_ssl_directly(config, monkeypatch):
     sent = []
-    call_count = {"smtp": 0}
-
-    StubOK = make_stub_smtp(sent)
-
-    class StubSMTP_TLS_Fails:
-        def __init__(self, *a, **kw):
-            call_count["smtp"] += 1
-        def starttls(self):
-            raise OSError("TLS not supported")
-
-    class StubSMTP_SSL(StubOK):
-        pass
-
-    monkeypatch.setattr(smtplib, "SMTP", StubSMTP_TLS_Fails)
-    monkeypatch.setattr(smtplib, "SMTP_SSL", StubSMTP_SSL)
+    config.email.smtp_port = 465
+    monkeypatch.setattr(smtplib, "SMTP", lambda *a, **kw: pytest.fail("465 must use SSL immediately"))
+    monkeypatch.setattr(smtplib, "SMTP_SSL", make_stub_smtp(sent))
     send_email(config, "<html>ssl</html>")
     assert len(sent) == 1
 
 
-def test_send_email_falls_back_to_plain(config, monkeypatch):
+def test_send_email_retries_disconnected_login(config, monkeypatch):
     sent = []
-    call_count = {"smtp": 0}
-
     StubOK = make_stub_smtp(sent)
+    attempts = []
 
-    class StubSMTP_TLS_Fails:
-        def __init__(self, *a, **kw):
-            call_count["smtp"] += 1
-            if call_count["smtp"] == 1:
-                pass  # first SMTP() call succeeds, but starttls will fail
-            else:
-                pass  # third SMTP() call is the plain fallback
-        def starttls(self):
-            raise OSError("TLS not supported")
+    class InterruptedSMTP(StubOK):
         def login(self, u, p):
-            pass
-        def sendmail(self, s, r, m):
-            sent.append((s, r, m))
+            attempts.append("login")
+            if len(attempts) < 3:
+                raise smtplib.SMTPServerDisconnected("Connection unexpectedly closed")
+
+    monkeypatch.setattr(smtplib, "SMTP", InterruptedSMTP)
+    monkeypatch.setattr("zotero_arxiv_daily.utils.sleep", lambda _: None)
+    send_email(config, "<html>retry login</html>")
+    assert len(attempts) == 3
+    assert len(sent) == 1
+
+
+def test_send_email_never_authenticates_after_failed_starttls(config, monkeypatch):
+    class NoTLS(make_stub_smtp([])):
+        def starttls(self, **kwargs):
+            raise smtplib.SMTPNotSupportedError("STARTTLS unavailable")
+
+        def login(self, *args):
+            pytest.fail("Must not authenticate without TLS")
+
+    monkeypatch.setattr(smtplib, "SMTP", NoTLS)
+    with pytest.raises(smtplib.SMTPNotSupportedError):
+        send_email(config, "test")
+
+
+def test_send_email_does_not_retry_authentication_rejection(config, monkeypatch):
+    attempts = []
+
+    class Rejected(make_stub_smtp([])):
+        def login(self, *args):
+            attempts.append("login")
+            raise smtplib.SMTPAuthenticationError(535, b"Invalid credentials")
+
+    monkeypatch.setattr(smtplib, "SMTP", Rejected)
+    with pytest.raises(smtplib.SMTPAuthenticationError):
+        send_email(config, "test")
+    assert attempts == ["login"]
+
+
+def test_send_email_does_not_retry_ambiguous_send(config, monkeypatch):
+    attempts = []
+
+    class InterruptedSend(make_stub_smtp([])):
+        def sendmail(self, *args):
+            attempts.append("send")
+            raise smtplib.SMTPServerDisconnected("Connection lost after DATA")
+
+    monkeypatch.setattr(smtplib, "SMTP", InterruptedSend)
+    with pytest.raises(smtplib.SMTPServerDisconnected):
+        send_email(config, "test")
+    assert attempts == ["send"]
+
+
+def test_send_email_quit_disconnect_does_not_fail_delivered_mail(config, monkeypatch):
+    sent = []
+
+    class InterruptedQuit(make_stub_smtp(sent)):
         def quit(self):
-            pass
+            raise smtplib.SMTPServerDisconnected("Closed after accepted mail")
 
-    class StubSMTP_SSL_Fails:
-        def __init__(self, *a, **kw):
-            raise OSError("SSL not supported")
-
-    monkeypatch.setattr(smtplib, "SMTP", StubSMTP_TLS_Fails)
-    monkeypatch.setattr(smtplib, "SMTP_SSL", StubSMTP_SSL_Fails)
-    send_email(config, "<html>plain</html>")
+    monkeypatch.setattr(smtplib, "SMTP", InterruptedQuit)
+    send_email(config, "test")
     assert len(sent) == 1
 
 

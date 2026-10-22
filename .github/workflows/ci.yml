@@ -1,6 +1,15 @@
 name: CI
 on:
   workflow_dispatch:
+    inputs:
+      model_smoke:
+        description: Test real local Jina/Qwen models without sending email
+        type: boolean
+        default: false
+      smtp_check:
+        description: Check existing SMTP credentials without sending email
+        type: boolean
+        default: false
   push:
     branches:
       - main
@@ -22,3 +31,45 @@ jobs:
       - name: Run Pytest
         run: |
           uv run pytest -m "" --cov=src/zotero_arxiv_daily --cov-report=term-missing
+
+  local-model-smoke:
+    if: github.event_name == 'workflow_dispatch' && inputs.model_smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7.1.4
+      - uses: ./.github/actions/setup-llama
+      - name: Verify local embedding and Chinese summary
+        run: uv run scripts/smoke_local_llm.py
+
+  smtp-check:
+    if: github.event_name == 'workflow_dispatch' && inputs.smtp_check
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check SMTP login without sending email
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SENDER: ${{ secrets.SENDER }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os, smtplib, ssl
+          host = os.environ['SMTP_SERVER']
+          port = int(os.environ['SMTP_PORT'])
+          context = ssl.create_default_context()
+          if port == 465:
+              server = smtplib.SMTP_SSL(host, port, timeout=20, context=context)
+          else:
+              server = smtplib.SMTP(host, port, timeout=20)
+              server.starttls(context=context)
+          try:
+              server.login(os.environ['SENDER'], os.environ['SENDER_PASSWORD'])
+              print('SMTP authentication succeeded; no email was sent.')
+          except smtplib.SMTPAuthenticationError as error:
+              raise RuntimeError(f'SMTP authentication rejected ({error.smtp_code}); check the authorization code.') from None
+          finally:
+              server.close()
+          PY
