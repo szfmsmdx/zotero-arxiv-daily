@@ -1,6 +1,21 @@
 from .protocol import Paper
 import math
 from html import escape
+from markdown_it import MarkdownIt
+
+
+_MARKDOWN = MarkdownIt("commonmark", {"html": False})
+
+
+def _render_markdown(value: str | None) -> str:
+    """Render model-generated Markdown as safe HTML for the email body."""
+    tokens = _MARKDOWN.parse(value or "")
+    for token in tokens:
+        if token.type == "paragraph_open":
+            token.attrSet("style", "margin:0 0 8px 0;")
+        elif token.type in {"bullet_list_open", "ordered_list_open"}:
+            token.attrSet("style", "margin:4px 0;padding-left:22px;")
+    return _MARKDOWN.renderer.render(tokens, _MARKDOWN.options, {})
 
 
 framework = """
@@ -75,6 +90,9 @@ def get_block_html(
             if score in rating_urls
         )
 
+    tldr_html = _render_markdown(tldr)
+    introduction_html = _render_markdown(introduction)
+
     block_template = """
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, sans-serif; border: 1px solid #ddd; border-radius: 8px; padding: 16px; background-color: #f9f9f9;">
     <tr>
@@ -95,13 +113,13 @@ def get_block_html(
         </td>
     </tr>
     <tr>
-        <td style="font-size: 14px; color: #333; padding: 8px 0; white-space: pre-line;">
-            <strong>TLDR:</strong> {tldr}
+        <td style="font-size: 14px; color: #333; padding: 8px 0; line-height: 1.5;">
+            <strong>TLDR:</strong><div>{tldr}</div>
         </td>
     </tr>
     <tr>
-        <td style="font-size: 14px; color: #333; padding: 8px 0; white-space: pre-line;">
-            <strong>论文介绍:</strong><br>{introduction}
+        <td style="font-size: 14px; color: #333; padding: 8px 0; line-height: 1.5;">
+            <strong>论文介绍:</strong><div>{introduction}</div>
         </td>
     </tr>
 
@@ -117,8 +135,8 @@ def get_block_html(
         title=escape(title or ""),
         authors=escape(authors or ""),
         rate=escape(rate or ""),
-        tldr=escape(tldr or ""),
-        introduction=escape(introduction or ""),
+        tldr=tldr_html,
+        introduction=introduction_html,
         paper_url=escape(paper_url or "", quote=True),
         affiliations=escape(affiliations or ""),
         rating_buttons=rating_buttons,
