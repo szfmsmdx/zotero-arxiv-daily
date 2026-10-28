@@ -148,7 +148,7 @@ def render_email(papers:list[Paper], rating_links: dict[str, dict[int, str]] | N
     
     for p in papers:
         #rate = get_stars(p.score)
-        rate = round(p.score, 1) if p.score is not None else 'Unknown'
+        rate = str(round(p.score, 1)) if p.score is not None else 'Unknown'
         author_list = [a for a in p.authors]
         num_authors = len(author_list)
         if num_authors <= 5:
