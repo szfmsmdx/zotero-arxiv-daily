@@ -1,21 +1,72 @@
-from .protocol import Paper
 import math
+import re
 from html import escape
+from hashlib import sha256
+from io import BytesIO
 from markdown_it import MarkdownIt
+from loguru import logger
+
+from .protocol import Paper
 
 
 _MARKDOWN = MarkdownIt("commonmark", {"html": False})
+_LATEX_MATH = re.compile(r"(?<!\\)\$(?!\$)(.+?)(?<!\\)\$(?!\$)", re.DOTALL)
 
 
-def _render_markdown(value: str | None) -> str:
-    """Render model-generated Markdown as safe HTML for the email body."""
-    tokens = _MARKDOWN.parse(value or "")
+def _render_latex(latex: str, inline_images: dict[str, bytes]) -> str:
+    """Render supported LaTeX math as a CID image for email clients."""
+    from matplotlib.font_manager import FontProperties
+    from matplotlib.mathtext import math_to_image
+
+    content_id = f"math-{sha256(latex.encode('utf-8')).hexdigest()[:20]}"
+    if content_id not in inline_images:
+        image = BytesIO()
+        math_to_image(
+            f"${latex}$",
+            image,
+            prop=FontProperties(size=12),
+            dpi=144,
+            format="png",
+            color="#333333",
+        )
+        inline_images[content_id] = image.getvalue()
+    return (
+        f'<img src="cid:{content_id}" alt="{escape(latex, quote=True)}" '
+        'style="display:inline-block;vertical-align:-0.25em;height:1.4em;max-width:100%;width:auto;">'
+    )
+
+
+def _render_markdown(value: str | None, inline_images: dict[str, bytes]) -> str:
+    """Render model-generated Markdown and inline math as email-safe HTML."""
+    source = value or ""
+    source = re.sub(r"(\*\*[^*\n]+?\*\*)(?=\S)", r"\1 ", source)
+    source = re.sub(r"(?<!\*)\*[^*\n]+?\*(?!\*)(?=\S)", r"\g<0> ", source)
+
+    math_replacements: dict[str, str] = {}
+
+    def replace_math(match: re.Match[str]) -> str:
+        latex = match.group(1).strip()
+        if not latex:
+            return match.group(0)
+        placeholder = f"ZOTEROMATHPLACEHOLDER{len(math_replacements)}TOKEN"
+        try:
+            math_replacements[placeholder] = _render_latex(latex, inline_images)
+        except Exception as error:
+            logger.warning("Failed to render inline math expression: {}", error)
+            math_replacements[placeholder] = f"<code>{escape(match.group(0))}</code>"
+        return placeholder
+
+    source = _LATEX_MATH.sub(replace_math, source)
+    tokens = _MARKDOWN.parse(source)
     for token in tokens:
         if token.type == "paragraph_open":
             token.attrSet("style", "margin:0 0 8px 0;")
         elif token.type in {"bullet_list_open", "ordered_list_open"}:
             token.attrSet("style", "margin:4px 0;padding-left:22px;")
-    return _MARKDOWN.renderer.render(tokens, _MARKDOWN.options, {})
+    rendered = _MARKDOWN.renderer.render(tokens, _MARKDOWN.options, {})
+    for placeholder, html in math_replacements.items():
+        rendered = rendered.replace(placeholder, html)
+    return rendered
 
 
 framework = """
@@ -77,6 +128,7 @@ def get_block_html(
     affiliations: str = None,
     introduction: str = None,
     rating_urls: dict[int, str] | None = None,
+    inline_images: dict[str, bytes] | None = None,
 ):
     rating_buttons = ""
     if rating_urls:
@@ -90,8 +142,9 @@ def get_block_html(
             if score in rating_urls
         )
 
-    tldr_html = _render_markdown(tldr)
-    introduction_html = _render_markdown(introduction)
+    inline_images = inline_images if inline_images is not None else {}
+    tldr_html = _render_markdown(tldr, inline_images)
+    introduction_html = _render_markdown(introduction, inline_images)
 
     block_template = """
     <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, sans-serif; border: 1px solid #ddd; border-radius: 8px; padding: 16px; background-color: #f9f9f9;">
@@ -159,7 +212,12 @@ def get_stars(score:float):
         return '<div class="star-wrapper">'+full_star * full_star_num + half_star * half_star_num + '</div>'
 
 
-def render_email(papers:list[Paper], rating_links: dict[str, dict[int, str]] | None = None) -> str:
+def render_email(
+    papers: list[Paper],
+    rating_links: dict[str, dict[int, str]] | None = None,
+    inline_images: dict[str, bytes] | None = None,
+) -> str:
+    inline_images = inline_images if inline_images is not None else {}
     parts = []
     if len(papers) == 0 :
         return framework.replace('__CONTENT__', get_empty_html())
@@ -190,6 +248,7 @@ def render_email(papers:list[Paper], rating_links: dict[str, dict[int, str]] | N
                 affiliations,
                 introduction=p.introduction,
                 rating_urls=(rating_links or {}).get(p.url),
+                inline_images=inline_images,
             )
         )
 

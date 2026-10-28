@@ -7,6 +7,8 @@ import ssl
 from time import sleep
 from collections import Counter
 from email.header import Header
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
 from loguru import logger
@@ -141,7 +143,7 @@ def glob_match(path:str, pattern:str) -> bool:
     re_pattern = glob.translate(pattern,recursive=True)
     return re.match(re_pattern, path) is not None
 
-def send_email(config:DictConfig, html:str):
+def send_email(config:DictConfig, html:str, inline_images:dict[str, bytes] | None = None):
     sender = config.email.sender
     receiver = config.email.receiver
     password = config.email.sender_password
@@ -151,7 +153,16 @@ def send_email(config:DictConfig, html:str):
         name, addr = parseaddr(s)
         return formataddr((Header(name, 'utf-8').encode(), addr))
 
-    msg = MIMEText(html, 'html', 'utf-8')
+    if inline_images:
+        msg = MIMEMultipart('related')
+        msg.attach(MIMEText(html, 'html', 'utf-8'))
+        for content_id, image_data in inline_images.items():
+            image = MIMEImage(image_data, 'png')
+            image.add_header('Content-ID', f'<{content_id}>')
+            image.add_header('Content-Disposition', 'inline')
+            msg.attach(image)
+    else:
+        msg = MIMEText(html, 'html', 'utf-8')
     msg['From'] = _format_addr('Github Action <%s>' % sender)
     msg['To'] = _format_addr('You <%s>' % receiver)
     today = datetime.datetime.now().strftime('%Y/%m/%d')

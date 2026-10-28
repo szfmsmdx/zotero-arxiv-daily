@@ -126,7 +126,12 @@ class Executor:
             return
         logger.info("Sending email...")
         rating_links = self.feedback_client.rating_links(reranked_papers)
-        email_content = render_email(reranked_papers, rating_links=rating_links)
-        send_email(self.config, email_content)
+        inline_images: dict[str, bytes] = {}
+        email_content = render_email(
+            reranked_papers,
+            rating_links=rating_links,
+            inline_images=inline_images,
+        )
+        send_email(self.config, email_content, inline_images=inline_images)
         logger.info("Email sent successfully")
         self.feedback_client.register_sent(reranked_papers)

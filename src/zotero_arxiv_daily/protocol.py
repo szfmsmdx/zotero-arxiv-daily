@@ -79,7 +79,11 @@ class Paper:
         prompt = self._build_summary_prompt(
             f"Write exactly one sentence in {lang} that states this paper's core contribution. "
             "Be concrete about what the paper changes or enables. Use only the supplied information; "
-            "do not add background, evaluation claims, or unsupported details.",
+            "do not add background, evaluation claims, or unsupported details. "
+            "Format emphasis with Markdown. Put a normal space after closing **bold** or *italic* "
+            "markers whenever prose follows, including Chinese text (for example, `**term** 后续`). "
+            "For inline equations, use single-dollar LaTeX delimiters like `$x^2$ 后续`; use only "
+            "standard Matplotlib Mathtext commands and do not use raw HTML.",
             llm_params,
         )
         if not prompt:
@@ -105,7 +109,8 @@ class Paper:
             "2. Method: first give a brief overview in a few sentences, then list the main steps or components as concise bullets.\n"
             "3. Results: report the main findings, including quantitative results, baselines, and evaluation conditions when provided. Do not invent missing numbers.\n"
             "4. Underlying idea and transferability: explain the broader problem-solving idea and whether it resembles an established idea from another area, such as computer architecture or operating systems. Suggest where it could transfer and why. Separate paper claims from your interpretation.\n\n"
-            "Keep each section concise but informative. Avoid generic praise and unsupported claims. If the information does not cover a section, say so.",
+            "Keep each section concise but informative. Avoid generic praise and unsupported claims. If the information does not cover a section, say so.\n\n"
+            "Formatting requirements for the email: use Markdown emphasis and lists, not raw HTML. Put a normal space after closing **bold** or *italic* markers whenever prose follows, including Chinese text (for example, `**term** 后续`). For inline equations, use single-dollar LaTeX delimiters like `$x^2$ 后续`; use only standard Matplotlib Mathtext commands. Do not use display equations or `\\(...\\)` delimiters.",
             llm_params,
         )
         if not prompt:
