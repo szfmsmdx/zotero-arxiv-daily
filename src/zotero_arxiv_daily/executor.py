@@ -12,6 +12,7 @@ from .utils import send_email
 from openai import OpenAI
 from tqdm import tqdm
 from .local_llm import local_llm
+from .feedback import FeedbackClient, feedback_file_path, load_feedback
 
 
 def normalize_path_patterns(patterns: list[str] | ListConfig | None, config_key: str) -> list[str] | None:
@@ -39,6 +40,7 @@ class Executor:
             source: get_retriever_cls(source)(config) for source in config.executor.source
         }
         self.reranker = get_reranker_cls(config.executor.reranker)(config)
+        self.feedback_client = FeedbackClient(config)
         self.openai_client = OpenAI(
             api_key=config.llm.api.key, base_url=config.llm.api.base_url,
             timeout=float(config.llm.get("request_timeout", 180)), max_retries=1,
@@ -95,11 +97,8 @@ class Executor:
 
     
     def run(self):
-        corpus = self.fetch_zotero_corpus()
-        corpus = self.filter_corpus(corpus)
-        if len(corpus) == 0:
-            logger.error(f"No zotero papers found. Please check your zotero settings:\n{self.config.zotero}")
-            return
+        corpus = load_feedback(feedback_file_path(self.config))
+        logger.info("Loaded {} scored or previously sent papers from the feedback file", len(corpus))
         all_papers = []
         for source, retriever in self.retrievers.items():
             logger.info(f"Retrieving {source} papers...")
@@ -116,15 +115,18 @@ class Executor:
             reranked_papers = self.reranker.rerank(all_papers, corpus)
             if self.config.executor.max_paper_num != -1:
                 reranked_papers = reranked_papers[:self.config.executor.max_paper_num]
-            logger.info("Generating TLDR and affiliations...")
+            logger.info("Generating contribution TLDR, paper introduction, and affiliations...")
             with local_llm(self.config.llm):
                 for p in tqdm(reranked_papers):
                     p.generate_tldr(self.openai_client, self.config.llm)
+                    p.generate_introduction(self.openai_client, self.config.llm)
                     p.generate_affiliations(self.openai_client, self.config.llm)
         elif not self.config.executor.send_empty:
             logger.info("No new papers found. No email will be sent.")
             return
         logger.info("Sending email...")
-        email_content = render_email(reranked_papers)
+        rating_links = self.feedback_client.rating_links(reranked_papers)
+        email_content = render_email(reranked_papers, rating_links=rating_links)
         send_email(self.config, email_content)
         logger.info("Email sent successfully")
+        self.feedback_client.register_sent(reranked_papers)

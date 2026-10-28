@@ -46,12 +46,13 @@ class Paper:
     pdf_url: Optional[str] = None
     full_text: Optional[str] = None
     tldr: Optional[str] = None
+    introduction: Optional[str] = None
     affiliations: Optional[list[str]] = None
     score: Optional[float] = None
 
-    def _generate_tldr_with_llm(self, openai_client:OpenAI,llm_params:dict) -> str:
+    def _build_summary_prompt(self, instruction: str, llm_params: dict) -> str:
         lang = llm_params.get('language', 'English')
-        prompt = f"Given the following information of a paper, generate a one-sentence TLDR summary in {lang}:\n\n"
+        prompt = f"{instruction.strip()}\n\n"
         if self.title:
             prompt += f"Title:\n {self.title}\n\n"
 
@@ -63,26 +64,63 @@ class Paper:
 
         if not self.full_text and not self.abstract:
             logger.warning(f"Neither full text nor abstract is provided for {self.url}")
-            return "Failed to generate TLDR. Neither full text nor abstract is provided"
+            return ""
         
         # use gpt-4o tokenizer for estimation
         enc = tiktoken.encoding_for_model("gpt-4o")
         prompt_tokens = enc.encode(prompt)
         prompt_tokens = prompt_tokens[:4000]  # truncate to 4000 tokens
         prompt = enc.decode(prompt_tokens)
-        
-        tldr = _request_llm(
+
+        return prompt
+
+    def _generate_tldr_with_llm(self, openai_client:OpenAI,llm_params:dict) -> str:
+        lang = llm_params.get('language', 'English')
+        prompt = self._build_summary_prompt(
+            f"Write exactly one sentence in {lang} that states this paper's core contribution. "
+            "Be concrete about what the paper changes or enables. Use only the supplied information; "
+            "do not add background, evaluation claims, or unsupported details.",
+            llm_params,
+        )
+        if not prompt:
+            return "Failed to generate TLDR. Neither full text nor abstract is provided"
+        return _request_llm(
             openai_client,
             llm_params,
             [
                 {
                     "role": "system",
-                    "content": f"You are an assistant who perfectly summarizes scientific paper, and gives the core idea of the paper to the user. Your answer should be in {lang}.",
+                    "content": f"You write precise one-sentence scientific paper contribution summaries in {lang}.",
                 },
                 {"role": "user", "content": prompt},
             ],
         )
-        return tldr
+
+    def _generate_introduction_with_llm(self, openai_client: OpenAI, llm_params: dict) -> str:
+        lang = llm_params.get('language', 'English')
+        prompt = self._build_summary_prompt(
+            f"Write a structured, specific introduction to this paper in {lang}, using only the information below. "
+            "Use these four sections in this order, with headings written in the requested language:\n"
+            "1. Field, background, and problem: identify the research area, context, and concrete problem or limitation addressed.\n"
+            "2. Method: first give a brief overview in a few sentences, then list the main steps or components as concise bullets.\n"
+            "3. Results: report the main findings, including quantitative results, baselines, and evaluation conditions when provided. Do not invent missing numbers.\n"
+            "4. Underlying idea and transferability: explain the broader problem-solving idea and whether it resembles an established idea from another area, such as computer architecture or operating systems. Suggest where it could transfer and why. Separate paper claims from your interpretation.\n\n"
+            "Keep each section concise but informative. Avoid generic praise and unsupported claims. If the information does not cover a section, say so.",
+            llm_params,
+        )
+        if not prompt:
+            return ""
+        return _request_llm(
+            openai_client,
+            llm_params,
+            [
+                {
+                    "role": "system",
+                    "content": f"You are a careful research assistant. Distinguish reported facts from your analysis and do not invent details. Write in {lang}.",
+                },
+                {"role": "user", "content": prompt},
+            ],
+        )
     
     def generate_tldr(self, openai_client:OpenAI,llm_params:dict) -> str:
         try:
@@ -91,9 +129,25 @@ class Paper:
             return tldr
         except Exception as e:
             logger.warning(f"Failed to generate tldr of {self.url}: {e}")
-            tldr = self.abstract
+            tldr = self._fallback_tldr()
             self.tldr = tldr
             return tldr
+
+    def _fallback_tldr(self) -> str:
+        text = (self.abstract or "").strip()
+        if not text:
+            return "Failed to generate TLDR. Neither full text nor abstract is provided"
+        sentence = re.split(r"(?<=[.!?。！？])\s+", text, maxsplit=1)[0]
+        return sentence if len(sentence) <= 320 else sentence[:317].rstrip() + "..."
+
+    def generate_introduction(self, openai_client: OpenAI, llm_params: dict) -> str:
+        """Generate the detailed email explanation in a separate LLM call from the TLDR."""
+        try:
+            self.introduction = self._generate_introduction_with_llm(openai_client, llm_params)
+        except Exception as e:
+            logger.warning(f"Failed to generate introduction of {self.url}: {e}")
+            self.introduction = self.abstract or "Introduction unavailable."
+        return self.introduction
 
     def _generate_affiliations_with_llm(self, openai_client:OpenAI,llm_params:dict) -> Optional[list[str]]:
         if self.full_text is not None:

@@ -1,0 +1,44 @@
+name: Record paper rating from Issue
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  record-rating:
+    if: github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, '[Paper Rating]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Validate Issue and update ratings
+        run: python scripts/process_rating_issue.py "$GITHUB_EVENT_PATH" feedback/ratings.md
+
+      - name: Commit feedback rating
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add feedback/ratings.md
+          if git diff --cached --quiet; then
+            echo "Rating is already recorded."
+          else
+            git commit -m "feedback: record paper rating [skip ci]"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+
+      - name: Close recorded rating Issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: gh issue close "$ISSUE_NUMBER" --repo "$GH_REPO" --comment "评分已写入 feedback/ratings.md。"
