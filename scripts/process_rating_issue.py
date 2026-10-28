@@ -54,7 +54,7 @@ def write_records(path: Path, records: list[dict]) -> None:
     lines = [
         "# Paper feedback and ranking seeds",
         "",
-        "Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.",
+        "Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.",
         "",
         "| 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |",
         "| --- | --- | ---: | --- |",
