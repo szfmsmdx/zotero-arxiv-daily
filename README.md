@@ -45,12 +45,12 @@ The workflows install the server and cache model weights. The server starts only
 when there are papers to summarize and stops before sending email. For local runs,
 install `llama-server` or set `LLAMA_SERVER` to its executable path.
 
-When `CUSTOM_CONFIG` is empty, the old `ARXIV_QUERY`, `MAX_PAPER_NUM`,
-`SMTP_SERVER`, `SMTP_PORT`, and `LANGUAGE` settings are still honored. `ARXIV_QUERY`
+When `CUSTOM_CONFIG` is empty, the old `ARXIV_QUERY`, `SMTP_SERVER`, `SMTP_PORT`,
+and `LANGUAGE` settings are still honored. `ARXIV_QUERY`
 accepts category codes separated by `+` or commas; its Secret value is used directly
 without printing it. Explicit `CUSTOM_CONFIG` takes precedence over these legacy
-settings. SMTP uses SSL on port 465 and STARTTLS on other ports, without falling
-back to unencrypted authentication.
+settings. The daily workflow is capped at 5 papers. SMTP uses SSL on port 465 and
+STARTTLS on other ports, without falling back to unencrypted authentication.
 
 To verify the real models without fetching Zotero data or sending email, manually
 run **CI** with **model_smoke** enabled. For an external LLM instead, set
@@ -183,7 +183,7 @@ reranker:
 executor:
   debug: false # Whether to use debug mode. Example: true
   send_empty: false # Whether to send an empty email even if no new papers today. Example: true
-  max_paper_num: 100 # The maximum number of the papers presented in the email. Example: 100
+  max_paper_num: 5 # The maximum number of the papers presented in the email.
   source: ??? # The sources of papers to retrieve. Example: ['arxiv','biorxiv','medrxiv','chemrxiv']
   reranker: local # The reranker to use. Example: 'local' or 'api'
 ```
