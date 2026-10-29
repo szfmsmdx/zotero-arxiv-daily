@@ -116,6 +116,39 @@ def test_affiliations_returns_parsed_list(llm_params, api_mode):
     assert "Peking University" in result
 
 
+def test_affiliations_uses_first_page_without_truncating(llm_params):
+    captured = {}
+
+    def create_response(**kwargs):
+        captured["messages"] = kwargs["messages"]
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content='["Example University"]'))]
+        )
+
+    client = _client_with_affiliation_response('["Example University"]')
+    client.chat.completions.create = create_response
+    paper = make_sample_paper(
+        full_text="old TeX preamble " * 5000,
+        first_page_text="FIRST PAGE " + ("x " * 5000),
+    )
+
+    result = paper.generate_affiliations(client, llm_params)
+
+    user_message = next(message["content"] for message in captured["messages"] if message["role"] == "user")
+    assert result == ["Example University"]
+    assert "FIRST PAGE" in user_message
+    assert "old TeX preamble" not in user_message
+    assert user_message.count("x ") > 2000
+
+
+def test_affiliations_falls_back_to_full_text_when_first_page_missing(llm_params):
+    paper = make_sample_paper(full_text="fallback source text")
+
+    result = paper.generate_affiliations(make_stub_openai_client(), llm_params)
+
+    assert result == ["TsingHua University", "Peking University"]
+
+
 def test_affiliations_none_without_fulltext(llm_params):
     client = make_stub_openai_client()
     paper = make_sample_paper(full_text=None)

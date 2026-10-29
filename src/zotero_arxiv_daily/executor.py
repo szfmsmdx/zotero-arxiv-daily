@@ -1,7 +1,7 @@
 from loguru import logger
 from pyzotero import zotero
 from omegaconf import DictConfig, ListConfig
-from .utils import glob_match
+from .utils import glob_match, extract_first_page_from_pdf_url
 from .retriever import get_retriever_cls
 from .protocol import CorpusPaper
 import random
@@ -116,6 +116,16 @@ class Executor:
             if self.config.executor.max_paper_num != -1:
                 reranked_papers = reranked_papers[:self.config.executor.max_paper_num]
             logger.info("Generating contribution TLDR, paper introduction, and affiliations...")
+            for paper in reranked_papers:
+                if paper.source == "arxiv" and paper.pdf_url and not paper.first_page_text:
+                    try:
+                        paper.first_page_text = extract_first_page_from_pdf_url(paper.pdf_url)
+                        if paper.first_page_text:
+                            logger.info(f"Extracted PDF first page for affiliation extraction: {paper.url}")
+                        else:
+                            logger.warning(f"PDF first page was empty for {paper.url}; using existing paper text")
+                    except Exception as exc:
+                        logger.warning(f"Failed to extract PDF first page for {paper.url}: {exc}; using existing paper text")
             with local_llm(self.config.llm):
                 for p in tqdm(reranked_papers):
                     p.generate_tldr(self.openai_client, self.config.llm)

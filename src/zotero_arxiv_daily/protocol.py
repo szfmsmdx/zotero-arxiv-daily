@@ -106,6 +106,7 @@ class Paper:
     introduction: Optional[str] = None
     affiliations: Optional[list[str]] = None
     score: Optional[float] = None
+    first_page_text: Optional[str] = None
 
     def _build_summary_prompt(self, instruction: str, llm_params: dict) -> str:
         lang = llm_params.get('language', 'English')
@@ -212,13 +213,23 @@ class Paper:
         return self.introduction
 
     def _generate_affiliations_with_llm(self, openai_client:OpenAI,llm_params:dict) -> Optional[list[str]]:
-        if self.full_text is not None:
-            prompt = f"Given the beginning of a paper, extract the authors' affiliations in author order. Return only a valid JSON array of strings; if no affiliation is found, return [].\n\n{self.full_text}"
-            # use gpt-4o tokenizer for estimation
-            enc = tiktoken.encoding_for_model("gpt-4o")
-            prompt_tokens = enc.encode(prompt)
-            prompt_tokens = prompt_tokens[:2000]  # truncate to 2000 tokens
-            prompt = enc.decode(prompt_tokens)
+        paper_text = self.first_page_text
+        uses_first_page = bool(paper_text)
+        if not paper_text:
+            paper_text = self.full_text
+            if paper_text is not None:
+                logger.info(f"Falling back to existing paper text for affiliation extraction: {self.url}")
+
+        if paper_text is not None:
+            text_label = "first page" if uses_first_page else "beginning"
+            prompt = f"Given the {text_label} of a paper, extract the authors' affiliations in author order. Return only a valid JSON array of strings; if no affiliation is found, return [].\n\n{paper_text}"
+            # Keep the legacy limit only for source/HTML text. Tested arXiv first pages
+            # fit comfortably in the model context and should be sent without truncation.
+            if not uses_first_page:
+                enc = tiktoken.encoding_for_model("gpt-4o")
+                prompt_tokens = enc.encode(prompt)
+                prompt_tokens = prompt_tokens[:2000]
+                prompt = enc.decode(prompt_tokens)
             affiliations = _request_llm(
                 openai_client,
                 llm_params,

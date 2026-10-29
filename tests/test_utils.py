@@ -5,9 +5,45 @@ import tarfile
 import io
 
 import pytest
+import pymupdf
 
-from zotero_arxiv_daily.utils import glob_match, send_email, extract_tex_code_from_tar, _bm25_pick
+from zotero_arxiv_daily.utils import (
+    glob_match,
+    send_email,
+    extract_tex_code_from_tar,
+    extract_first_page_from_pdf_url,
+    _bm25_pick,
+)
 from tests.canned_responses import make_stub_smtp
+
+
+def test_extract_first_page_from_pdf_url(monkeypatch):
+    document = pymupdf.open()
+    document.new_page().insert_text((72, 72), "FIRST PAGE affiliation")
+    document.new_page().insert_text((72, 72), "SECOND PAGE body")
+    pdf_bytes = document.tobytes()
+    document.close()
+
+    class Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def raise_for_status(self):
+            return None
+
+        def iter_content(self, chunk_size):
+            for offset in range(0, len(pdf_bytes), chunk_size):
+                yield pdf_bytes[offset : offset + chunk_size]
+
+    monkeypatch.setattr("zotero_arxiv_daily.utils.requests.get", lambda *_args, **_kwargs: Response())
+
+    text = extract_first_page_from_pdf_url("https://arxiv.org/pdf/example")
+
+    assert "FIRST PAGE affiliation" in text
+    assert "SECOND PAGE body" not in text
 
 
 # ---------------------------------------------------------------------------

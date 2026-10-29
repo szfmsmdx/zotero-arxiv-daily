@@ -176,6 +176,7 @@ def test_run_end_to_end(config, monkeypatch):
     stub_client = make_stub_openai_client()
     monkeypatch.setattr("zotero_arxiv_daily.executor.OpenAI", lambda **kw: stub_client)
     monkeypatch.setattr("zotero_arxiv_daily.reranker.api.OpenAI", lambda **kw: stub_client)
+    monkeypatch.setattr("zotero_arxiv_daily.executor.extract_first_page_from_pdf_url", lambda _url: None)
     retrieved = [
         make_sample_paper(title="E2E Paper 1", score=None),
         make_sample_paper(title="E2E Paper 2", score=None),

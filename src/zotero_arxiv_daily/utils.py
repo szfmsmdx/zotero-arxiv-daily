@@ -13,6 +13,8 @@ from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
 from loguru import logger
 import datetime
+import os
+from tempfile import TemporaryDirectory
 from omegaconf import DictConfig
 import pymupdf
 import pymupdf.layout
@@ -20,6 +22,7 @@ pymupdf.TOOLS.mupdf_display_errors(False)
 pymupdf.layout.activate()
 
 import pymupdf4llm  # noqa: E402
+import requests
 
 _TOKEN_RE = re.compile(r'[a-zA-Z0-9]+')
 
@@ -138,6 +141,34 @@ def extract_tex_code_from_tar(file_path:str, paper_id:str, paper_title:str | Non
 
 def extract_markdown_from_pdf(file_path:str) -> str:
     return pymupdf4llm.to_markdown(file_path,use_ocr=False,header=False,footer=False,ignore_code=True)
+
+
+def extract_first_page_from_pdf_url(pdf_url: str) -> str | None:
+    """Download a PDF and return Markdown for only its first page."""
+    with TemporaryDirectory() as temp_dir:
+        pdf_path = os.path.join(temp_dir, "paper.pdf")
+        with requests.get(pdf_url, stream=True, timeout=(10, 60)) as response:
+            response.raise_for_status()
+            with open(pdf_path, "wb") as pdf_file:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        pdf_file.write(chunk)
+
+        with pymupdf.open(pdf_path) as document:
+            if document.page_count == 0:
+                return None
+            text = pymupdf4llm.to_markdown(
+                document,
+                pages=[0],
+                use_ocr=False,
+                header=False,
+                footer=False,
+                ignore_code=True,
+                show_progress=False,
+            )
+            if not text.strip():
+                text = document[0].get_text("text")
+        return text.strip() or None
 
 def glob_match(path:str, pattern:str) -> bool:
     re_pattern = glob.translate(pattern,recursive=True)
