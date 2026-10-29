@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -53,3 +53,13 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | Speculative Streaming | https://arxiv.org/abs/2402.11131 | 4 | 将未来 n-gram 预测融入目标模型，在不增加独立草稿模型的情况下加速生成。 |
 | Block Verification | https://arxiv.org/abs/2403.10444 | 4 | 以块结构组织推测 token 的验证，降低目标模型验证阶段的开销。 |
 | EAGLE-2 | https://arxiv.org/abs/2406.16858 | 4 | 根据动态置信度构建草稿树，使推测解码在不同输入上自适应分配分支。 |
+| Request-Adaptive Execution for Efficient Hybrid LLM Inference | https://arxiv.org/abs/2610.37432 |  | This paper presents **Morph**, a serving system that co-designs a request-adaptive hybrid LLM architecture using prefill-oriented gating to select per-request layouts and employs selective batching with hybrid-aware context caching to enable efficient serving with divergent layer choices. |
+| TAO: Tool-Aware Joint Scheduling for LLM-Based Agentic Serving | https://arxiv.org/abs/2610.37230 |  | TAO 提出了一种针对基于 LLM 的智能代理服务的工具感知联合调度框架，通过结合近端工具就绪状态、带时间感知衰减的节点特定缓存信用以及 Token 足迹，利用动态程序在容量约束下联合选择并放置待处理会话，从而将延迟降低高达 26.8%、首 Token 时间降低高达 36.3% 并提升解码吞吐量高达 29.5%。 |
+| Distributed LLM Inference via Communication-Efficient Speculative Decoding | https://arxiv.org/abs/2610.35957 |  | 本文提出了 DISCO 框架，通过在服务器端部署小语言模型（SLM）副本来本地获取拒采所需的草稿分布，从而消除了分布式投机解码中基于词汇表的分布传输，仅交换**已起草的 token 索引**和**标量概率值**。 |
+| JustGoal: With Only a Goal, the AI Baseline Is Above the Expert Kernels | https://arxiv.org/abs/2610.36434 |  | 本文提出了名为 JustGoal 的基线方法，该方法仅让通用智能体接收优化目标与约束，而不提供任何内核特定的基础设施、知识库或预设工作流，并使其自主构建评估循环；实验表明，在 NVIDIA B200 GPU 上，JustGoal 在 10 个算子中的 8 个上优于开源库（每算子几何平均加速比为 1.14$\times$ 至 2.34$\times$），在 9 个有公开比较的算子中的 5 个上超越了最快的公开专用智能体内核，同时针对 Fable 5.1 在单形状上的同模型对比显示，去除这些专家机制后性能损失不超过 5%。 |
+| DCKV: Learned Transform Coding of the Prompt KV Cache in Hybrid Language Models | https://arxiv.org/abs/2610.36950 |  | DCKV 提出了一种**首篇**端到端训练的 KV 缓存压缩器，该压缩器通过联合优化**受提示词和已解码邻域条件化**的变换、量化器与熵模型，在 Qwen3.5-2B 模型上实现了相对于 bf16 格式**55 倍以上**的压缩率（损失不超过 1.8 点）和**100 倍以上**的压缩率（损失不超过 3.6 点）。 |
+| Let the Gate Decide: Per-Lookup Precision for Quantized Conditional Memory in LLMs | https://arxiv.org/abs/2610.35985 |  | **GateRQ** 将量化条件存储中的每行编码为 1 位残差码栈，并在 GPU 内存中仅保留第一级以计算门控，从而仅在门控评分最高的查找中读取更深层级，实现了在无需重新训练的情况下大幅降低 GPU 表内存占用（DeepSeek-V4.1-Flash 上减少 7.8 倍）并提升 vLLM 吞吐量的贡献。 |
+| EdgePace: Deadline- and Freshness-Aware LLM Scheduling on Unified-Memory Platforms | https://arxiv.org/abs/2610.37307 |  | EdgePace 通过创建一个跨预填充和解码阶段的**安全挂起点**、监控**前景内存需求**并在**低开销**下挂起，从而保护**前景截止日期**的同时保持**及时 LLM 反馈**，并在**内存带宽竞争风险**、**截止日期松弛**和**输出新鲜度**方面调度推理。 |
+| DeepInfer-Mac: Running a 750B-Class MoE on a 24 GB Laptop | https://arxiv.org/abs/2610.36564 |  | DeepInfer-Mac 实现了一个在配备 24 GB 统一内存的 MacBook Air 上本地运行 750B 参数混合专家模型（MoE）的系统，该设计通过组织专家权重以直接填充可重用 GPU 缓冲区并将缓存分配与缓冲区生命周期耦合，从而在保留约 7.6 GiB 常驻权重的同时，将模型其余部分（路由专家及 Engram 行）存储在内部 SSD 上按需加载。 |
+| HiLo-RD: Cross-Budget Self-Distillation for Masked Diffusion Language Models | https://arxiv.org/abs/2610.36901 |  | HiLo-RD 提出了一种无需外部教师的高 - 低预算表示蒸馏方法，通过将大窗口教师状态与裁剪后的小窗口视图配对并在已承诺位置匹配其隐藏表示，从而同时指导掩码扩散语言模型的令牌预测与承诺顺序。 |
+| V-LUMEN: Visual Lookup Memory for Embedding Scaling in Vision-Language Models | https://arxiv.org/abs/2610.37019 |  | 本文提出了**V-LUMEN**，一种通过非参数化查找机制将连续视觉特征离散化为可复用记忆键，并利用文本条件信号进行检索与融合，从而在冻结的 Qwen3-VL-2B 主干网络上提升推理性能并实现零样本迁移的视觉查找记忆系统。 |
