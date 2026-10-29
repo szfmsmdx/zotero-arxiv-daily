@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, TypeVar
 from datetime import datetime
+import ast
 import re
 import tiktoken
 from openai import OpenAI
@@ -34,6 +35,62 @@ def _request_llm(openai_client: OpenAI, llm_params: dict, messages: list[dict]) 
         f"Unsupported llm.api_mode: {api_mode}. "
         "Expected 'chat_completion' or 'response'."
     )
+
+
+def _parse_affiliation_list(response: str) -> list[str]:
+    """Parse a JSON or Python-style list from an LLM response."""
+    start = response.find("[")
+    if start < 0:
+        raise ValueError("No affiliation list found in LLM response")
+
+    depth = 0
+    quote = None
+    escaped = False
+    end = None
+    for index in range(start, len(response)):
+        char = response[index]
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+        elif char == "[":
+            depth += 1
+        elif char == "]":
+            depth -= 1
+            if depth == 0:
+                end = index + 1
+                break
+
+    if end is None:
+        raise ValueError("Unterminated affiliation list in LLM response")
+
+    candidate = response[start:end]
+    try:
+        affiliations = json.loads(candidate)
+    except json.JSONDecodeError:
+        # Small local models sometimes return Python's single-quoted list syntax.
+        affiliations = ast.literal_eval(candidate)
+
+    if not isinstance(affiliations, list) or not all(
+        isinstance(affiliation, str) for affiliation in affiliations
+    ):
+        raise ValueError("Affiliation response must be a list of strings")
+
+    # Remove duplicates without losing the author order.
+    result = []
+    seen = set()
+    for affiliation in affiliations:
+        affiliation = affiliation.strip()
+        if affiliation and affiliation not in seen:
+            seen.add(affiliation)
+            result.append(affiliation)
+    return result
 
 
 @dataclass
@@ -156,7 +213,7 @@ class Paper:
 
     def _generate_affiliations_with_llm(self, openai_client:OpenAI,llm_params:dict) -> Optional[list[str]]:
         if self.full_text is not None:
-            prompt = f"Given the beginning of a paper, extract the affiliations of the authors in a python list format, which is sorted by the author order. If there is no affiliation found, return an empty list '[]':\n\n{self.full_text}"
+            prompt = f"Given the beginning of a paper, extract the authors' affiliations in author order. Return only a valid JSON array of strings; if no affiliation is found, return [].\n\n{self.full_text}"
             # use gpt-4o tokenizer for estimation
             enc = tiktoken.encoding_for_model("gpt-4o")
             prompt_tokens = enc.encode(prompt)
@@ -168,18 +225,13 @@ class Paper:
                 [
                     {
                         "role": "system",
-                        "content": "You are an assistant who perfectly extracts affiliations of authors from a paper. You should return a python list of affiliations sorted by the author order, like [\"TsingHua University\",\"Peking University\"]. If an affiliation is consisted of multi-level affiliations, like 'Department of Computer Science, TsingHua University', you should return the top-level affiliation 'TsingHua University' only. Do not contain duplicated affiliations. If there is no affiliation found, you should return an empty list [ ]. You should only return the final list of affiliations, and do not return any intermediate results.",
+                        "content": "You extract author affiliations from papers. Return only a valid JSON array of strings in author order, for example [\"TsingHua University\",\"Peking University\"]. If an affiliation has multiple levels, return only the top-level institution. Do not include duplicates. If no affiliations are found, return []. Do not include Markdown or explanatory text.",
                     },
                     {"role": "user", "content": prompt},
                 ],
             )
 
-            affiliations = re.search(r'\[.*?\]', affiliations, flags=re.DOTALL).group(0)
-            affiliations = json.loads(affiliations)
-            affiliations = list(set(affiliations))
-            affiliations = [str(a) for a in affiliations]
-
-            return affiliations
+            return _parse_affiliation_list(affiliations)
     
     def generate_affiliations(self, openai_client:OpenAI,llm_params:dict) -> Optional[list[str]]:
         try:

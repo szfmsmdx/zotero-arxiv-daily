@@ -1,5 +1,7 @@
 """Tests for zotero_arxiv_daily.protocol: Paper.generate_tldr, Paper.generate_affiliations."""
 
+from types import SimpleNamespace
+
 import pytest
 
 from tests.canned_responses import make_sample_paper, make_stub_openai_client
@@ -12,6 +14,19 @@ def llm_params():
         "language": "English",
         "generation_kwargs": {"model": "gpt-4o-mini", "max_tokens": 16384},
     }
+
+
+def _client_with_affiliation_response(content):
+    def create_response(**kwargs):
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
+        )
+
+    return SimpleNamespace(
+        chat=SimpleNamespace(
+            completions=SimpleNamespace(create=create_response),
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -109,13 +124,13 @@ def test_affiliations_none_without_fulltext(llm_params):
 
 
 def test_affiliations_deduplicates(llm_params):
-    """The stub returns two distinct affiliations, so no dedup needed.
-    But confirm the set() dedup in the code doesn't break anything.
-    """
-    client = make_stub_openai_client()
+    """Python-style model output is accepted, deduplicated, and kept in order."""
+    client = _client_with_affiliation_response(
+        "Affiliations: ['Peking University', 'TsingHua University', 'Peking University']"
+    )
     paper = make_sample_paper()
     result = paper.generate_affiliations(client, llm_params)
-    assert len(result) == len(set(result))
+    assert result == ["Peking University", "TsingHua University"]
 
 
 def test_affiliations_malformed_llm_output(llm_params):
@@ -138,8 +153,18 @@ def test_affiliations_malformed_llm_output(llm_params):
     )
     paper = make_sample_paper()
     result = paper.generate_affiliations(client, llm_params)
-    # re.search for [...] will fail -> AttributeError -> caught -> returns None
+    # Without a list, parsing fails gracefully and affiliations remain unavailable.
     assert result is None
+
+
+def test_affiliations_parses_json_list_with_brackets_inside_string(llm_params):
+    response = '["Example University [Main Campus]", "Peking University"]'
+    client = _client_with_affiliation_response(response)
+    paper = make_sample_paper()
+
+    result = paper.generate_affiliations(client, llm_params)
+
+    assert result == ["Example University [Main Campus]", "Peking University"]
 
 
 def test_affiliations_error_returns_none(llm_params):
