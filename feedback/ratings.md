@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -53,7 +53,7 @@ Scores 1–5 are explicit ratings. A blank score means the paper was mailed but 
 | Speculative Streaming | https://arxiv.org/abs/2402.11131 | 4 | 将未来 n-gram 预测融入目标模型，在不增加独立草稿模型的情况下加速生成。 |
 | Block Verification | https://arxiv.org/abs/2403.10444 | 4 | 以块结构组织推测 token 的验证，降低目标模型验证阶段的开销。 |
 | EAGLE-2 | https://arxiv.org/abs/2406.16858 | 4 | 根据动态置信度构建草稿树，使推测解码在不同输入上自适应分配分支。 |
-| Request-Adaptive Execution for Efficient Hybrid LLM Inference | https://arxiv.org/abs/2610.37432 |  | This paper presents **Morph**, a serving system that co-designs a request-adaptive hybrid LLM architecture using prefill-oriented gating to select per-request layouts and employs selective batching with hybrid-aware context caching to enable efficient serving with divergent layer choices. |
+| Request-Adaptive Execution for Efficient Hybrid LLM Inference | https://arxiv.org/abs/2610.37432 | 5 | This paper presents **Morph**, a serving system that co-designs a request-adaptive hybrid LLM architecture using prefill-oriented gating to select per-request layouts and employs selective batching with hybrid-aware context caching to enable efficient serving with divergent layer choices. |
 | TAO: Tool-Aware Joint Scheduling for LLM-Based Agentic Serving | https://arxiv.org/abs/2610.37230 |  | TAO 提出了一种针对基于 LLM 的智能代理服务的工具感知联合调度框架，通过结合近端工具就绪状态、带时间感知衰减的节点特定缓存信用以及 Token 足迹，利用动态程序在容量约束下联合选择并放置待处理会话，从而将延迟降低高达 26.8%、首 Token 时间降低高达 36.3% 并提升解码吞吐量高达 29.5%。 |
 | Distributed LLM Inference via Communication-Efficient Speculative Decoding | https://arxiv.org/abs/2610.35957 |  | 本文提出了 DISCO 框架，通过在服务器端部署小语言模型（SLM）副本来本地获取拒采所需的草稿分布，从而消除了分布式投机解码中基于词汇表的分布传输，仅交换**已起草的 token 索引**和**标量概率值**。 |
 | JustGoal: With Only a Goal, the AI Baseline Is Above the Expert Kernels | https://arxiv.org/abs/2610.36434 |  | 本文提出了名为 JustGoal 的基线方法，该方法仅让通用智能体接收优化目标与约束，而不提供任何内核特定的基础设施、知识库或预设工作流，并使其自主构建评估循环；实验表明，在 NVIDIA B200 GPU 上，JustGoal 在 10 个算子中的 8 个上优于开源库（每算子几何平均加速比为 1.14$\times$ 至 2.34$\times$），在 9 个有公开比较的算子中的 5 个上超越了最快的公开专用智能体内核，同时针对 Fable 5.1 在单形状上的同模型对比显示，去除这些专家机制后性能损失不超过 5%。 |
