@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -63,3 +63,8 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | DeepInfer-Mac: Running a 750B-Class MoE on a 24 GB Laptop | https://arxiv.org/abs/2610.36564 |  | DeepInfer-Mac 实现了一个在配备 24 GB 统一内存的 MacBook Air 上本地运行 750B 参数混合专家模型（MoE）的系统，该设计通过组织专家权重以直接填充可重用 GPU 缓冲区并将缓存分配与缓冲区生命周期耦合，从而在保留约 7.6 GiB 常驻权重的同时，将模型其余部分（路由专家及 Engram 行）存储在内部 SSD 上按需加载。 |
 | HiLo-RD: Cross-Budget Self-Distillation for Masked Diffusion Language Models | https://arxiv.org/abs/2610.36901 |  | HiLo-RD 提出了一种无需外部教师的高 - 低预算表示蒸馏方法，通过将大窗口教师状态与裁剪后的小窗口视图配对并在已承诺位置匹配其隐藏表示，从而同时指导掩码扩散语言模型的令牌预测与承诺顺序。 |
 | V-LUMEN: Visual Lookup Memory for Embedding Scaling in Vision-Language Models | https://arxiv.org/abs/2610.37019 |  | 本文提出了**V-LUMEN**，一种通过非参数化查找机制将连续视觉特征离散化为可复用记忆键，并利用文本条件信号进行检索与融合，从而在冻结的 Qwen3-VL-2B 主干网络上提升推理性能并实现零样本迁移的视觉查找记忆系统。 |
+| Causal Attention on CPU: A Cache-Aware and Load-Balanced Scheduling Kernel for Prefill | https://arxiv.org/abs/2610.38809 |  | This paper introduces **CACPU**, a cache-aware and load-balanced attention kernel that employs **tiered cache blocking** and an **in-kernel task dispatching mechanism** to optimize multi-tier cache utilization and thread scheduling for causal full-sequence prefilling on CPUs. |
+| DolphinRouting: Cluster-Level Binary Routing for Disaggregated LLM Inference Serving | https://arxiv.org/abs/2610.40292 |  | 本文提出 DolphinRouting，一种通过离线策略搜索学习每类请求聚类（基于原始提示长度、缓存调整后的输入长度及输出长度）的二进制路由决策，并在线利用特征提取、聚类分配和表查找机制来动态选择本地或远程预fill 执行路径，从而在不改变资源分配和单节点执行的前提下，基于端到端 SLO 反馈优化请求级路径选择。 |
+| GAUSS: A Workload-Aware Analytical and Monte-Carlo Simulator for LLM Inference Serving | https://arxiv.org/abs/2610.37989 |  | GAUSS 提出了一种结合校准的分阶段延迟表面与 Lindley 递归队列模型的**工作负载感知分析器**，通过**集合蒙特卡洛采样**而非单条轨迹回放，来预测给定工作负载、引擎和加速器下**首字延迟**（TTFT）和**字间延迟**（TBT）的完整分布以及**可持续请求速率**。 |
+| PDScope: Breaking the Prefill-Decode Seesaw for Memory-Bound MoE Inference | https://arxiv.org/abs/2610.39216 |  | PDScope 通过利用专家路由在预填充（prefill）和解码（decode）阶段的可预测性，将两者解耦并进行独立优化，从而利用跨层成本建模指导专家激活预测、调度与执行，最终在主流 MoE 模型上实现了比现有系统更高的预填充和解码吞吐量。 |
+| GAAC: Lossless KV Compression for Bandwidth-Efficient LLM Inference on Personal Devices | https://arxiv.org/abs/2610.38210 |  | GAAC 提出了一种利用指数冗余进行无损压缩的 Group-Adaptive Additive Codec 系统，通过自适应编码 BF16 指数、将注意力重构与解码内核融合以及块级缓存管理，实现了在个人设备上长上下文推理时的带宽高效服务。 |
