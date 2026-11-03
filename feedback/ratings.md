@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -69,7 +69,7 @@ Scores 1–5 are explicit ratings. A blank score means the paper was mailed but 
 | PDScope: Breaking the Prefill-Decode Seesaw for Memory-Bound MoE Inference | https://arxiv.org/abs/2610.39216 |  | PDScope 通过利用专家路由在预填充（prefill）和解码（decode）阶段的可预测性，将两者解耦并进行独立优化，从而利用跨层成本建模指导专家激活预测、调度与执行，最终在主流 MoE 模型上实现了比现有系统更高的预填充和解码吞吐量。 |
 | GAAC: Lossless KV Compression for Bandwidth-Efficient LLM Inference on Personal Devices | https://arxiv.org/abs/2610.38210 |  | GAAC 提出了一种利用指数冗余进行无损压缩的 Group-Adaptive Additive Codec 系统，通过自适应编码 BF16 指数、将注意力重构与解码内核融合以及块级缓存管理，实现了在个人设备上长上下文推理时的带宽高效服务。 |
 | ACCT: Asymmetric Cross-LLM Context Transfer | https://arxiv.org/abs/2610.42116 |  | ACCT 提出了一种针对同一模型家族内不同规模模型间 KV 缓存转移的轻量级组件框架，通过将源模型产生的 KV 缓存转换为目标模型可直接消费的稀疏 KV 状态，实现了跨模型上下文复用并解耦了上下文计算与下游推理。 |
-| SparseGDN: Chunk Sparse in Linear Attention | https://arxiv.org/abs/2610.41420 |  | This paper introduces **SparseGDN**, a hardware-aware framework that accelerates long-context prefill by combining a block-adjacent solver to reduce intra-chunk Delta-solve computation with a dynamic selector to allocate recurrent-update budgets, achieving **1.50**–**1.94**$\times$ speedups over native FLA kernels while retaining approximately **29%** of recurrent events. |
+| SparseGDN: Chunk Sparse in Linear Attention | https://arxiv.org/abs/2610.41420 | 5 | This paper introduces **SparseGDN**, a hardware-aware framework that accelerates long-context prefill by combining a block-adjacent solver to reduce intra-chunk Delta-solve computation with a dynamic selector to allocate recurrent-update budgets, achieving **1.50**–**1.94**$\times$ speedups over native FLA kernels while retaining approximately **29%** of recurrent events. |
 | Kernel-based Interpolatory Methods for Context Compression of Attention Mechanisms | https://arxiv.org/abs/2610.40943 |  | 本论文提出了 GAIM 和 Q-DAIM 两种基于核插值的 KV 缓存压缩方法，并引入了基于泰勒级数、Performer 和随机傅里叶特征的代理模型，从而将原本在上下文长度上呈二次复杂度的压缩成本降低至线性时间。 |
 | Structure-Aware Skill Retrieval and Arbitration for Optimization Modeling | https://arxiv.org/abs/2610.41909 |  | 该论文提出了\textsc{ArchOR}，一种通过\emph{Centroid-Aware Representation Learning} (CARL) 优化缓存技能表示排序和\emph{Signature-Guided Retrieval} (S$^3$R) 附加结构特征以进行筛选的架构中心技能代理，并引入了基线保持仲裁规则来决定何时用结构路由替代原始选择器，从而在不改变技能库和模型骨干的情况下提升了优化建模任务中求解器验证的准确率。 |
 | Latent Sparse Attention: Towards Subquadratic Ultra-Long Context Attention | https://arxiv.org/abs/2610.42147 |  | 本文提出**Latent Sparse Attention (LSA)**，通过让查询项在** learned latent space**中对**层次化聚类**进行评分而非直接评分所有键值，实现了在超长上下文（如 10M tokens）下保持精度同时将注意力效率提升**22.7x**（预填充）和**4.6x**（解码）。 |
