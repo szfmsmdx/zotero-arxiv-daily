@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -73,3 +73,8 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | Kernel-based Interpolatory Methods for Context Compression of Attention Mechanisms | https://arxiv.org/abs/2610.40943 |  | 本论文提出了 GAIM 和 Q-DAIM 两种基于核插值的 KV 缓存压缩方法，并引入了基于泰勒级数、Performer 和随机傅里叶特征的代理模型，从而将原本在上下文长度上呈二次复杂度的压缩成本降低至线性时间。 |
 | Structure-Aware Skill Retrieval and Arbitration for Optimization Modeling | https://arxiv.org/abs/2610.41909 |  | 该论文提出了\textsc{ArchOR}，一种通过\emph{Centroid-Aware Representation Learning} (CARL) 优化缓存技能表示排序和\emph{Signature-Guided Retrieval} (S$^3$R) 附加结构特征以进行筛选的架构中心技能代理，并引入了基线保持仲裁规则来决定何时用结构路由替代原始选择器，从而在不改变技能库和模型骨干的情况下提升了优化建模任务中求解器验证的准确率。 |
 | Latent Sparse Attention: Towards Subquadratic Ultra-Long Context Attention | https://arxiv.org/abs/2610.42147 |  | 本文提出**Latent Sparse Attention (LSA)**，通过让查询项在** learned latent space**中对**层次化聚类**进行评分而非直接评分所有键值，实现了在超长上下文（如 10M tokens）下保持精度同时将注意力效率提升**22.7x**（预填充）和**4.6x**（解码）。 |
+| BasisKV: Value Latents for Communication and Key Routing | https://arxiv.org/abs/2611.02583 |  | BasisKV 提出了一种低秩 KV 缓存压缩方法，通过联合优化跨 GPU 注意力分区的低秩因子来同时减少 Value 缓存宽度和张量并行通信开销，并利用压缩后的 Value 缓存辅助 Key 路由以进一步提升长上下文 LLM 推理的效率。 |
+| CISA: Retrofitting Dense Attention Models with Chunk-Indexed Sparse Attention | https://arxiv.org/abs/2611.03200 |  | 本文提出了无需梯度更新即可 Retrofitting 预训练密集注意力模型的 **Chunk-Indexed Sparse Attention (CISA)** 方法，通过利用紧凑的键向量摘要来选择固定大小的 KV 块，并在预填充阶段采用 **QShare** 机制复用块选择结果，从而在保持性能几乎无损失（误差在 1.5 个百分点以内）的前提下，将长上下文提示词的核心注意力速度提升 11.7 至 13.0 倍，并将端到端吞吐量提升 2.29 至 2.61 倍。 |
+| TileWeave: Heterogeneous Tiling for Sparse Prefill on Mobile SoCs | https://arxiv.org/abs/2611.00408 |  | TileWeave 通过利用跨查询复用将高共享键块部署在粗粒度 NPU 瓦片中，而将低复用块仅在查询块选择它们时通过 GPU 执行，并结合 NPU 原生池化键选择器与按 NPU 消费顺序合并 GPU 片断的运行时，实现了在 Snapdragon 手机上的稀疏预填充加速。 |
+| Seeing What Matters, Verifying What Pays: Load-Adaptive Speculative Decoding for Vision-Language Models | https://arxiv.org/abs/2611.01617 |  | Uni-LaSpec 提出了一种针对视觉语言模型的块并行推测解码框架，通过复用验证器的注意力机制并结合接受感知的训练来以低于 1 毫秒的成本精准选择关键视觉令牌以提升草稿质量，同时依据 GPU 负载动态调整验证结构（在低负载下利用空闲容量构建草稿树，在高负载下动态截断线性草稿）以实现自适应吞吐量。 |
+| RTP-LLM: Building an Evolvable and Reliable LLM Inference Engine at Alibaba Scale | https://arxiv.org/abs/2611.00967 |  | 本文提出了 **RTP-LLM**，这是一个将模型特定执行与共享请求处理、状态管理及资源协调分离的开源推理引擎，通过显式接口实现了模型变更的局部化，使 $\sim$100 个模型和每日数百万亿个 token 的处理得以在异构生产环境中可靠运行。 |
