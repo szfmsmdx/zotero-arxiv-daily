@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -82,4 +82,4 @@ Scores 1–5 are explicit ratings. A blank score means the paper was mailed but 
 | LeanSparse: Memory-Efficient Serving for Native Sparse-Attention LLMs | https://arxiv.org/abs/2611.04671 |  | LeanSparse 提出了一种针对原生稀疏注意力大语言模型的内存高效服务系统，通过利用预填充阶段逐层加载历史数据以及解码阶段粗粒度至细粒度索引策略，显著降低了预填充的临时内存需求和解码的持久化内存占用。 |
 | Beyond Compression Ratio: High-Throughput KV Compression for Disaggregated LLM Serving | https://arxiv.org/abs/2611.04382 |  | 本文提出了**FastKVComp**（\system），通过融合分布变换与低比特量化为**TileLang**（\tilelang）内核消除中间张量冗余，并基于**LC**（\lc）替换原有不可扩展的无损压缩后端，将压缩吞吐量提升至**500 GB/s**以上并实现最高**5.9 倍**的加速，从而在**2.04 倍**上缩短了作业完成时间。 |
 | Coarse Semantic Blocks for Efficient Training-Free Sparse Attention | https://arxiv.org/abs/2611.04313 |  | 本论文提出一种无需训练稀疏注意力机制，通过构建特定提示的键索引将键聚类为大语义块，使查询位置能够以较低成本分块并并行处理，从而在 512K 到 1M 上下文长度下将预填充和推理阶段的整体墙钟速度提升 1.7-3.0 倍。 |
-| What Sets the Serving Speed of Looped Language Models? Measurements and Optimizations Graded by Exactness | https://arxiv.org/abs/2611.05150 |  | 该论文通过为 Ouro 和 Huginn-0125 测量并实施精确优化（如将 5689 个小型内核融合至舍入围栏后），将 Ouro 的吞吐量提升至 0.99 倍，将 Huginn 的吞吐量提升至 1.77-3.16 倍，同时将 Huginn 在 1319 个测试问题上的错误保持在 1 点以内。 |
+| What Sets the Serving Speed of Looped Language Models? Measurements and Optimizations Graded by Exactness | https://arxiv.org/abs/2611.05150 | 3 | 该论文通过为 Ouro 和 Huginn-0125 测量并实施精确优化（如将 5689 个小型内核融合至舍入围栏后），将 Ouro 的吞吐量提升至 0.99 倍，将 Huginn 的吞吐量提升至 1.77-3.16 倍，同时将 Huginn 在 1319 个测试问题上的错误保持在 1 点以内。 |
