@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -83,3 +83,8 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | Beyond Compression Ratio: High-Throughput KV Compression for Disaggregated LLM Serving | https://arxiv.org/abs/2611.04382 |  | 本文提出了**FastKVComp**（\system），通过融合分布变换与低比特量化为**TileLang**（\tilelang）内核消除中间张量冗余，并基于**LC**（\lc）替换原有不可扩展的无损压缩后端，将压缩吞吐量提升至**500 GB/s**以上并实现最高**5.9 倍**的加速，从而在**2.04 倍**上缩短了作业完成时间。 |
 | Coarse Semantic Blocks for Efficient Training-Free Sparse Attention | https://arxiv.org/abs/2611.04313 |  | 本论文提出一种无需训练稀疏注意力机制，通过构建特定提示的键索引将键聚类为大语义块，使查询位置能够以较低成本分块并并行处理，从而在 512K 到 1M 上下文长度下将预填充和推理阶段的整体墙钟速度提升 1.7-3.0 倍。 |
 | What Sets the Serving Speed of Looped Language Models? Measurements and Optimizations Graded by Exactness | https://arxiv.org/abs/2611.05150 | 3 | 该论文通过为 Ouro 和 Huginn-0125 测量并实施精确优化（如将 5689 个小型内核融合至舍入围栏后），将 Ouro 的吞吐量提升至 0.99 倍，将 Huginn 的吞吐量提升至 1.77-3.16 倍，同时将 Huginn 在 1319 个测试问题上的错误保持在 1 点以内。 |
+| Hybrid Spark: Adaptive Speculative Decoding That Lets the Content Choose the Drafter | https://arxiv.org/abs/2611.05611 |  | \sys 提出了一种自适应投机解码框架，该框架在 GPU 上运行模型驱动和基于 n-gram 的无模型草案生成器，利用统一的价格机制（即验证插槽的边际吞吐量）来动态选择请求的最佳草案链，从而在无需分割 GPU 资源的情况下同时优化代码编辑和通用文本生成的吞吐量。 |
+| CHARM+: Cross-Hardware Attention with Re-Merge Multistream Mechanism | https://arxiv.org/abs/2611.05906 |  | 本文提出了 CHARM+ 算法，通过重组序列通信为多级结构以实现级内并行与计算通信重叠，并利用跨硬件查询并行机制解耦跨硬件与级内通信，从而消除了因带宽不平衡导致的同步开销。 |
+| Split-KV: Efficient Context Parallelism for Training Diffusion Drafters | https://arxiv.org/abs/2611.05926 |  | Split-KV introduces an exact context parallelism method that keeps key/value shards local and limits per-layer attention communication to query-sized tensors, thereby decoupling communication from context length to support the nonlinear, sample-dependent load-balancing requirements of diffusion drafter training. |
+| Shallow Encoding Emits Deep Memories | https://arxiv.org/abs/2611.06084 |  | This paper introduces SEED, a hybrid model inference method that leverages the properties of trained deep-layer write paths (**emitters**) to shallowly encode deep memories from a residual stream and decomposes recurrent states into a state sink plus low-rank factors to enable efficient, open-loop bounded-error compression during decoding. |
+| A Controlled Experimental Evaluation of Configuration and Cache Architecture in LLM Serving Engines | https://arxiv.org/abs/2611.05991 |  | This paper constructs a reproducible Kubernetes-based testbed and a seeded multi-agent workload generator to isolate the impact of **chunked prefill** configuration differences between vLLM and SGLang, demonstrating that matching this setting removes **78%** of the capacity gap and **30 to 67\%** of the latency gap, while revealing that residual performance disparities stem from scheduling-induced queue growth rather than cache architecture alone. |
