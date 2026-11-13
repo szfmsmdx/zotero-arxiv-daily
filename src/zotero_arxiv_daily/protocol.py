@@ -109,7 +109,6 @@ class Paper:
     first_page_text: Optional[str] = None
 
     def _build_summary_prompt(self, instruction: str, llm_params: dict) -> str:
-        lang = llm_params.get('language', 'English')
         prompt = f"{instruction.strip()}\n\n"
         if self.title:
             prompt += f"Title:\n {self.title}\n\n"
@@ -130,10 +129,10 @@ class Paper:
         prompt_tokens = prompt_tokens[:4000]  # truncate to 4000 tokens
         prompt = enc.decode(prompt_tokens)
 
-        return prompt
+        return prompt + "\n\n请使用中文总结。"
 
     def _generate_tldr_with_llm(self, openai_client:OpenAI,llm_params:dict) -> str:
-        lang = llm_params.get('language', 'English')
+        lang = 'Chinese'
         prompt = self._build_summary_prompt(
             f"Write exactly one sentence in {lang} that states this paper's core contribution. "
             "Be concrete about what the paper changes or enables. Use only the supplied information; "
@@ -159,7 +158,7 @@ class Paper:
         )
 
     def _generate_introduction_with_llm(self, openai_client: OpenAI, llm_params: dict) -> str:
-        lang = llm_params.get('language', 'English')
+        lang = 'Chinese'
         prompt = self._build_summary_prompt(
             f"Write a structured, specific introduction to this paper in {lang}, using only the information below. "
             "Use these four sections in this order, with headings written in the requested language:\n"

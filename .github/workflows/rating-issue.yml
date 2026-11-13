@@ -21,24 +21,31 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Validate Issue and update ratings
-        run: python scripts/process_rating_issue.py "$GITHUB_EVENT_PATH" feedback/ratings.md
-
       - name: Commit feedback rating
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add feedback/ratings.md
-          if git diff --cached --quiet; then
-            echo "Rating is already recorded."
-          else
+          for attempt in {1..10}; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard FETCH_HEAD
+            python scripts/process_rating_issue.py "$GITHUB_EVENT_PATH" feedback/ratings.md
+            git add feedback/ratings.md
+            if git diff --cached --quiet; then
+              echo "Rating is already recorded."
+              exit 0
+            fi
             git commit -m "feedback: record paper rating [skip ci]"
-            git push origin "HEAD:$GITHUB_REF_NAME"
-          fi
+            if git push origin "HEAD:$GITHUB_REF_NAME"; then
+              exit 0
+            fi
+            sleep "$attempt"
+          done
+          echo "Unable to record rating after 10 attempts."
+          exit 1
 
       - name: Close recorded rating Issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: gh issue close "$ISSUE_NUMBER" --repo "$GH_REPO" --comment "评分已写入 feedback/ratings.md。"
+        run: gh issue close "$ISSUE_NUMBER" --repo "$GH_REPO"

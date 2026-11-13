@@ -73,6 +73,14 @@ def test_tldr_truncates_long_prompt(llm_params):
     assert result is not None
 
 
+def test_summary_prompt_keeps_chinese_instruction_after_truncation(llm_params):
+    paper = make_sample_paper(full_text="word " * 10000)
+
+    prompt = paper._build_summary_prompt("Summarize this paper.", llm_params)
+
+    assert prompt.endswith("请使用中文总结。")
+
+
 def test_response_mode_maps_max_tokens(llm_params):
     from types import SimpleNamespace
 
