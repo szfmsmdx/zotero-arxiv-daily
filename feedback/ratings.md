@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -108,3 +108,8 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | Tri-Stack-PIM: A Heterogeneous Multi-Die 3D-Integrated Processing-in-Memory Architecture for Efficient LLM Inference | https://arxiv.org/abs/2611.13644 |  | 本文提出了 Tri-Stack-PIM 架构，该架构通过利用成熟工艺节点制造中间层缓冲芯片来容纳物理层、DMA 引擎和近内存计算单元，同时利用先进工艺节点制造底层基芯片以专用于 SIMD MAC 阵列，从而有效解决了先进节点基芯片面积与物理设计约束之间的张力，并引入了 Unified Buffer-Aware Ready-based (UBAR) 硬件乱序微操作调度器以在运行时强制执行跨芯片依赖正确性并最大化指令槽位利用率。 |
 | SHADOWPREFILL: Keeping Your Next Model Warm for Per-Step Model Routing in Agentic LLM Serving | https://arxiv.org/abs/2611.13176 |  | SHADOWPREFILL 通过在实例闲置容量中预填充代理会话上下文，利用在途请求的服务等级目标（SLO）松弛度，在模型路由切换前缓存前缀 KV，从而将切换调用延迟降低 8.5-21.4%、调用延迟降低 3.7-17.7%，并将路由令牌成本降低 22.5-46.1%。 |
 | Placing LLM Lookup Tables by Per-Layer Prefetch Deadlines | https://arxiv.org/abs/2611.13413 |  | 本文提出了 SlackTier，一种基于每层预取死线的 LLM 查找表分层方案，该方案通过在 SGLang 的解码 CUDA 图中按输入 token 索引顺序并发执行查找，将层 14 的表移至 NVMe 无缓存存储而层 1 共享少量 GPU 行缓存，从而在保持解码成本不超过 1.4% 的同时将主内存占用从 212 GiB 降至 34 GiB。 |
+| DRAMA: Dissecting Attention Redundancy for Accelerating Multimodal Diffusion Large Language Models | https://arxiv.org/abs/2611.16345 |  | 本文提出了 DRAMA，这是一个无需训练、无需修改架构且无需注意力缓存的加速框架，通过系统性地剖分多模态扩散大语言模型中的注意力冗余结构（即注意力质量在稀疏视觉令牌上的集中以及跨去噪步骤的分布快速稳定），利用空间冗余感知视觉令牌剪枝和充分性引导自适应停止两种互补机制，在六个视觉 - 语言基准测试中实现了平均$18.67\times$的推理速度提升，同时保持了具有竞争力的准确性。 |
+| Broadcast, Don't Replicate: Eliminating Weight HBM in Datacenter LLM Serving | https://arxiv.org/abs/2611.17097 |  | 本文提出了一种名为光学广播存储器（OBM）的开放式分层“采样与放大”光纤架构，该架构通过中央服务器持续广播模型权重，利用仅接收的共封装光学技术将参数直接交付给分布式推理节点，从而在不使用中间缓存的情况下消除了数太字节（petabytes）的显存（HBM）存储需求，同时有效支持了混合专家（MoE）模型的部署。 |
+| SubGPU Pipelining: Intra-GPU Fine-Grained Spatial Parallelism for LLM Inference | https://arxiv.org/abs/2611.14904 |  | 本文提出了 SubGPU Pipelining，这是一种细粒度、单卡内空间并行的执行模型，通过将算子图切割为有序连续段并将其绑定到由互斥的流式多处理器（SM）池支持的阶段，从而在匹配单卡吞吐量的情况下将单用户吞吐量最高提升 2.2 倍，或在匹配单用户吞吐量时将单卡吞吐量最高提升 1.9 倍。 |
+| Tideway: Phase-Aware Tiered Memory Management for MoE Inference on Consumer Devices | https://arxiv.org/abs/2611.14848 |  | 本文提出了 Tideway，该系统将消费级设备上的 GPU VRAM 与主机 RAM 统一管理为单一内存池，并耦合了适应预填充和推理阶段不同访问模式的相感知内存布局以及针对专家分页优化的 CUDA Graph 执行引擎，从而显著降低了跨层级数据搬运并提升了推理效率。 |
+| Together Compiler: Continual Compilation for AI Inference | https://arxiv.org/abs/2611.14681 |  | 该论文提出了 Together Compiler（TKCC），这是首个专为 AI 推理优化的真正持续编译循环系统，通过结合分层持久引擎和成本模型来解决测量吞吐与保真度之间的权衡问题，从而在 Llama 1B 等基准测试中实现比手写大核更高的吞吐量。 |
