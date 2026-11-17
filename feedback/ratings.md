@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -117,4 +117,4 @@ Scores 1–5 are explicit ratings. A blank score means the paper was mailed but 
 | VelServe: Taming Decode Jitters in LLM Inference with Tail-Calibrated Scheduling | https://arxiv.org/abs/2611.18392 |  | 本文提出了 VelServe，这是一种通过利用迭代延迟的尾部分布来校准每个解码步骤的预填充预算，并针对分散部署限制请求等待慢速接纳步骤数量的调度器，从而有效抑制大语言模型推理中的解码抖动并满足服务等级目标（SLO）。 |
 | Fuse-All MoE Inference Kernel with Load Balancing on TPUs | https://arxiv.org/abs/2611.17857 |  | 本文提出了**Fuse-All MoE**，这是一种在 TPUs 上实现混合专家模型推理的核设计，通过融合令牌收集、专家投影、门控激活和输出写入来优化计算、通信和负载均衡，从而在预填充阶段将非平衡工作负载的核运行时降低至平衡工作负载的 1.09 倍，并在解码阶段通过对称 EP8TP2 配置将核延迟减少高达 21.3%，配合服务栈优化后整体吞吐量提升高达 34.5%。 |
 | Callo: Serving Cache-Miss Requests with Speculative Decoding on Invalidated KV under Prefill-Decode Disaggregation | https://arxiv.org/abs/2611.18459 |  | Callo 是一个利用无效 KV 缓存进行投机草稿生成，并在预填充完成前对草稿进行验证以提交最终 token 的解耦服务系统，从而显著降低了因上下文编辑导致的缓存缺失延迟。 |
-| Superfluid: Local AI Server for Distributed LLM Inference | https://arxiv.org/abs/2611.17753 |  | 本文提出了 Superfluid，这是一个为本地大语言模型推理构建的开源服务器，它通过在一个设备上利用单一调度器驱动 llama.cpp、MLX 或 BaseRT 以实现交互请求预抢占和持久化日志，以及在跨设备上将异构机器集群转换为单一 API 端点来分别解决单机多代理和分布式集群场景。 |
+| Superfluid: Local AI Server for Distributed LLM Inference | https://arxiv.org/abs/2611.17753 | 4 | 本文提出了 Superfluid，这是一个为本地大语言模型推理构建的开源服务器，它通过在一个设备上利用单一调度器驱动 llama.cpp、MLX 或 BaseRT 以实现交互请求预抢占和持久化日志，以及在跨设备上将异构机器集群转换为单一 API 端点来分别解决单机多代理和分布式集群场景。 |
