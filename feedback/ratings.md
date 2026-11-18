@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -118,3 +118,8 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | Fuse-All MoE Inference Kernel with Load Balancing on TPUs | https://arxiv.org/abs/2611.17857 |  | 本文提出了**Fuse-All MoE**，这是一种在 TPUs 上实现混合专家模型推理的核设计，通过融合令牌收集、专家投影、门控激活和输出写入来优化计算、通信和负载均衡，从而在预填充阶段将非平衡工作负载的核运行时降低至平衡工作负载的 1.09 倍，并在解码阶段通过对称 EP8TP2 配置将核延迟减少高达 21.3%，配合服务栈优化后整体吞吐量提升高达 34.5%。 |
 | Callo: Serving Cache-Miss Requests with Speculative Decoding on Invalidated KV under Prefill-Decode Disaggregation | https://arxiv.org/abs/2611.18459 |  | Callo 是一个利用无效 KV 缓存进行投机草稿生成，并在预填充完成前对草稿进行验证以提交最终 token 的解耦服务系统，从而显著降低了因上下文编辑导致的缓存缺失延迟。 |
 | Superfluid: Local AI Server for Distributed LLM Inference | https://arxiv.org/abs/2611.17753 | 4 | 本文提出了 Superfluid，这是一个为本地大语言模型推理构建的开源服务器，它通过在一个设备上利用单一调度器驱动 llama.cpp、MLX 或 BaseRT 以实现交互请求预抢占和持久化日志，以及在跨设备上将异构机器集群转换为单一 API 端点来分别解决单机多代理和分布式集群场景。 |
+| NVFP4-MLA: Unified FP4 KV-Cache Storage and Attention Computation for Multi-Head Latent Attention | https://arxiv.org/abs/2611.18972 |  | 本文提出了 **NVFP4-MLA**，这是首个将多注意力头潜在注意力（MLA）的 KV 缓存存储与注意力计算统一量化为 FP4 的设计，通过联合设计量化算法、注意力内核与缓存系统，利用选择性残差补偿和二维量化块实现精度保持与兼容，从而在压缩 KV 缓存 3.05 至 3.20 倍的同时，在 NVIDIA Rubin GPU 上将注意力内核加速提升最高 2.82 倍并显著降低首令牌时间。 |
+| Rethinking KV Caching for LLM Decode: Free-Space Optical KV Regeneration for Reduction of Memory Traffic | https://arxiv.org/abs/2611.19279 |  | 本文提出了名为 OptiDecode 的混合光电子解码注意力加速器，利用自由空间光学在光学光栅上驻留投影权重，通过激活回放、原位注意力和分块流水线技术，实现了以低于 HBM 激活获取速率的开销全历史 KV 再生，从而在保持峰值 HBM 带宽不变的情况下，将 32K 上下文长度下 30B 至 175B 参数 MHA 模型的解码注意力速度提升了 1.92 至 1.99 倍。 |
+| Large Language Models for AI Infrastructure | https://arxiv.org/abs/2611.19061 |  | 本文提出了一种将人工智能基础设施生命周期划分为七个阶段的分类法，并将大语言模型（LLM）驱动的方法按其管理的资源（计算工件、部署上下文/系统状态、数据与能源）组织为三类，同时构建了跨研究的定量综合评估框架，以对比并分析 LLM 在加速器设计、内核工程、编译、部署、操作、数据管理及能源优化等关键任务上的性能增益。 |
+| MeltKV: Memory-Aligned KV Cache Compression via Variable-Bit Packed Vector Quantization for Long-Context LLMs | https://arxiv.org/abs/2611.18652 |  | 本文提出了一种名为 MeltKV 的框架，通过针对长上下文大语言模型的内存对齐可变位打包向量量化方案，结合基于关键缓存离群特性的头间代码本共享，实现了 KV 缓存压缩至 1 位并显著降低内存占用与推理延迟。 |
+| High-Throughput Serving of Nemotron 3.5 Transcribe with Regime-Aware Megakernels and Kernel Fusion | https://arxiv.org/abs/2611.20095 |  | 本文提出了一种基于离线测量交叉点的感知工作区机制，该机制在每个推理步长中动态选择持久化巨核（megakernels）或融合核链，从而在保持 Nemotron 3.5 Transcribe 精度（WER 1.91–1.93%）的同时，在 H100 SXM GPU 上实现了 4,345 倍实时吞吐量（1.39 倍于调优版 vLLM 峰值），并在 B200 GPU 上实现了 6,367 倍实时吞吐量。 |
