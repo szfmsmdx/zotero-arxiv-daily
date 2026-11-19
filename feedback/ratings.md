@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -123,3 +123,8 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | Large Language Models for AI Infrastructure | https://arxiv.org/abs/2611.19061 | 4 | 本文提出了一种将人工智能基础设施生命周期划分为七个阶段的分类法，并将大语言模型（LLM）驱动的方法按其管理的资源（计算工件、部署上下文/系统状态、数据与能源）组织为三类，同时构建了跨研究的定量综合评估框架，以对比并分析 LLM 在加速器设计、内核工程、编译、部署、操作、数据管理及能源优化等关键任务上的性能增益。 |
 | MeltKV: Memory-Aligned KV Cache Compression via Variable-Bit Packed Vector Quantization for Long-Context LLMs | https://arxiv.org/abs/2611.18652 | 4 | 本文提出了一种名为 MeltKV 的框架，通过针对长上下文大语言模型的内存对齐可变位打包向量量化方案，结合基于关键缓存离群特性的头间代码本共享，实现了 KV 缓存压缩至 1 位并显著降低内存占用与推理延迟。 |
 | High-Throughput Serving of Nemotron 3.5 Transcribe with Regime-Aware Megakernels and Kernel Fusion | https://arxiv.org/abs/2611.20095 | 4 | 本文提出了一种基于离线测量交叉点的感知工作区机制，该机制在每个推理步长中动态选择持久化巨核（megakernels）或融合核链，从而在保持 Nemotron 3.5 Transcribe 精度（WER 1.91–1.93%）的同时，在 H100 SXM GPU 上实现了 4,345 倍实时吞吐量（1.39 倍于调优版 vLLM 峰值），并在 B200 GPU 上实现了 6,367 倍实时吞吐量。 |
+| DNeo: Your Parallel Draft Model Needs Better Target Feature Encoding | https://arxiv.org/abs/2611.21925 |  | 本文提出了 Mixture-of-Features Attention (MoFA) 和拒绝记忆机制，通过改进目标特征编码来增强 drafter 模型，从而在保持生成质量的同时实现了比 SOTA (DFlash-2) 快 **1.3 倍** 的生成速度。 |
+| Communicate the Change: Efficient Expert Parallelism via Activation Compression | https://arxiv.org/abs/2611.22215 |  | 本文提出了 EchoMoE，一种通过激活压缩减少通信开销的轻量级架构修改，它利用早期层的隐藏状态作为参考仅传输压缩后的差异（而非完整隐藏状态），将专家并行通信量降低了 58%，并将吞吐量提高了 22.6%。 |
+| HyCoInfer: Cloud-Edge Collaborative Inference for Large Language Models on Heterogeneous GPU-FPGA Architectures | https://arxiv.org/abs/2611.22086 |  | 本文提出了 HyCoInfer 系统，该系统通过将预填充任务分配给云 GPU 并将解码任务在云 GPU 与边缘 FPGA 之间进行分发，同时结合层间流水线传输、解码器侧预计算以及基于残差向量量化的带宽自适应 KV 缓存压缩技术，有效解决了异构加速器的容量平衡、受限广域网下的 KV 缓存传输瓶颈以及异构执行带来的延迟问题。 |
+| XM-Sparse: High-Throughput Sparse-Attention LLM Serving over Scale-up Memory Pools | https://arxiv.org/abs/2611.22280 |  | 本文提出了首个基于规模扩展内存池的稀疏注意力卸载系统 XM-Sparse，通过针对动态 KV 条目采用 TMA 融合检索、针对可预测 K-index 访问采用 GPU 发起 DMA 预取，在仅保留热 KV 缓冲和 K-index 缓存的前提下显著降低了 HBM 占用，从而在保持高吞吐度的同时实现了 KV 缓存和索引缓存的激进卸载。 |
+| Efficient Wide-Beam Generative Retrieval with Model-Native Trie Decoding and Shared-Context Attention | https://arxiv.org/abs/2611.22309 |  | 本文提出了一种名为 Trie-Head 的模型原生解码接口，通过以 GPU 张量形式存储标识符前缀树来消除宽束搜索中词汇级分数张量的冗余计算与重复提示注意力开销，并结合共享上下文注意力机制，从而在不重新训练模型的前提下显著提升了生成检索系统的闭环吞吐量。 |
