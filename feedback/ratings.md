@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -128,3 +128,8 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | HyCoInfer: Cloud-Edge Collaborative Inference for Large Language Models on Heterogeneous GPU-FPGA Architectures | https://arxiv.org/abs/2611.22086 | 3 | 本文提出了 HyCoInfer 系统，该系统通过将预填充任务分配给云 GPU 并将解码任务在云 GPU 与边缘 FPGA 之间进行分发，同时结合层间流水线传输、解码器侧预计算以及基于残差向量量化的带宽自适应 KV 缓存压缩技术，有效解决了异构加速器的容量平衡、受限广域网下的 KV 缓存传输瓶颈以及异构执行带来的延迟问题。 |
 | XM-Sparse: High-Throughput Sparse-Attention LLM Serving over Scale-up Memory Pools | https://arxiv.org/abs/2611.22280 | 3 | 本文提出了首个基于规模扩展内存池的稀疏注意力卸载系统 XM-Sparse，通过针对动态 KV 条目采用 TMA 融合检索、针对可预测 K-index 访问采用 GPU 发起 DMA 预取，在仅保留热 KV 缓冲和 K-index 缓存的前提下显著降低了 HBM 占用，从而在保持高吞吐度的同时实现了 KV 缓存和索引缓存的激进卸载。 |
 | Efficient Wide-Beam Generative Retrieval with Model-Native Trie Decoding and Shared-Context Attention | https://arxiv.org/abs/2611.22309 |  | 本文提出了一种名为 Trie-Head 的模型原生解码接口，通过以 GPU 张量形式存储标识符前缀树来消除宽束搜索中词汇级分数张量的冗余计算与重复提示注意力开销，并结合共享上下文注意力机制，从而在不重新训练模型的前提下显著提升了生成检索系统的闭环吞吐量。 |
+| Harvesting Expert-Parallel Bubbles for Fine-Tuning | https://arxiv.org/abs/2611.24496 |  | BubbleTea 是首个利用专家并行气泡进行微调的共置系统，它通过预测每个层中每个 GPU 的负载气泡并填充可重用权重的微调任务片段，在无需为每种模型架构移植训练引擎的情况下，将微调吞吐量提高了 1.9--6.2 倍，同时将 p90 推理延迟保持在与单独服务相比 10% 以内的水平。 |
+| DexAttention: Distributed Sparse Attention through Rapid Online Planning and Persistent GPU Execution | https://arxiv.org/abs/2611.23512 |  | DexAttention 通过结合 GPU 加速的拓扑感知聚类分配器、轻量级贪婪调度器以及持久化内核，实现了一种支持静态和动态逐头掩码的分布式稀疏注意力系统，从而在无需重复启动注意力计算的情况下，利用粗粒度调度驱动细粒度重叠执行。 |
+| Optimize the Cob, Then the Kernel: Optimizing Beam Search for Generative Recommendation Inference | https://arxiv.org/abs/2611.23339 |  | 本文提出了一种针对生成式推荐推理的端到端优化流水线，通过利用 Tree Attention 沿序列维度拼接光束以消除冗余 KV 缓存访问，并结合预生成的部分注意力掩码、静态 KV 缓存分配、循环展开、TorchAir 图编译、自动算子融合以及词汇约束解码等系统级技术，在无需定制内核的情况下将 Ascend NPU 上的端到端延迟降低了多达 25 倍。 |
+| HETEROVLM: Edge Multi-Request Vision-Language Model Serving on a Heterogeneous Versal SoC with AI Engines and Programmable Logic | https://arxiv.org/abs/2611.23878 |  | HETEROVLM 在 AMD Versal SoC 上实现了支持多请求并发调度的边缘 VLM 加速器，通过让可编程逻辑（PL）中的调度器根据优先级和截止时间在计算引擎与 GEMV 解码单元间动态分配任务，使紧急请求能够在工作单元边界进行预emption 并从 DDR 中恢复，从而在不改变 AIE 静态数据流图的情况下显著降低了首令牌延迟并提升了吞吐量与能效。 |
+| Kernel Ridge Attention: Nonlinear Memory with Selective Forgetting | https://arxiv.org/abs/2611.23896 |  | 本文提出了 **Kernel Ridge Attention (KRA)**，这是一种通过协方差引导的记忆更新和选择性遗忘机制来实现非线性序列混合的递归架构，其核心贡献在于利用正定协方差矩阵动态控制记忆内容的写入方向与不确定性恢复，从而在保持推理状态大小与上下文长度无关的同时，实现了可解释的精确前缀核回归、支持并行训练的计算效率以及优于传统注意力机制和循环基线的语言建模性能。 |
