@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -133,3 +133,8 @@ Scores 1–5 are explicit preference ratings. A blank score means the paper was 
 | Optimize the Cob, Then the Kernel: Optimizing Beam Search for Generative Recommendation Inference | https://arxiv.org/abs/2611.23339 |  | 本文提出了一种针对生成式推荐推理的端到端优化流水线，通过利用 Tree Attention 沿序列维度拼接光束以消除冗余 KV 缓存访问，并结合预生成的部分注意力掩码、静态 KV 缓存分配、循环展开、TorchAir 图编译、自动算子融合以及词汇约束解码等系统级技术，在无需定制内核的情况下将 Ascend NPU 上的端到端延迟降低了多达 25 倍。 |
 | HETEROVLM: Edge Multi-Request Vision-Language Model Serving on a Heterogeneous Versal SoC with AI Engines and Programmable Logic | https://arxiv.org/abs/2611.23878 |  | HETEROVLM 在 AMD Versal SoC 上实现了支持多请求并发调度的边缘 VLM 加速器，通过让可编程逻辑（PL）中的调度器根据优先级和截止时间在计算引擎与 GEMV 解码单元间动态分配任务，使紧急请求能够在工作单元边界进行预emption 并从 DDR 中恢复，从而在不改变 AIE 静态数据流图的情况下显著降低了首令牌延迟并提升了吞吐量与能效。 |
 | Kernel Ridge Attention: Nonlinear Memory with Selective Forgetting | https://arxiv.org/abs/2611.23896 |  | 本文提出了 **Kernel Ridge Attention (KRA)**，这是一种通过协方差引导的记忆更新和选择性遗忘机制来实现非线性序列混合的递归架构，其核心贡献在于利用正定协方差矩阵动态控制记忆内容的写入方向与不确定性恢复，从而在保持推理状态大小与上下文长度无关的同时，实现了可解释的精确前缀核回归、支持并行训练的计算效率以及优于传统注意力机制和循环基线的语言建模性能。 |
+| FOREST: Coordinating Tree-based HBF, RRAM, and HBM for Efficient Speculative LLM Inference | https://arxiv.org/abs/2611.27701 |  | 本文提出了 FOREST 架构，通过协调基于 HBF、3D 堆叠 RRAM 和 HBM 的异质内存 - 计算树，实现了针对 speculative decoding 的专用资源分配与数值协同设计。 |
+| Topology Hub Optimal Transport: Eliminating Long Context Dilution at Flash Speed | https://arxiv.org/abs/2611.27951 |  | 本文提出了一种名为**Topology Hub Optimal Transport (THOT)**的新方法，该方法通过结合**simplex sparsemax**或**排序无关的阈值化 ReLU 门控机制**来限制支撑集容量，利用**三遍退火行封闭 Sinkhorn 调度**来抑制二分残差，并采用**基于批处理分因子 Triton 内核的精确秩 -$(D+2R+1)$ 单参考瓦片伴随算子**，从而在 NVIDIA L4 芯片上实现了**$L=262{,}144$**长上下文下的**97.40%**零样本召回率，同时保持了**$100.1\,\text{ms}$**的前向加反向传播时间（相对于 FlashAttention 的**$4.37\,\text{ms}$**快**$2.2$**倍）。 |
+| Contexture: Runtime Context Eviction for High-Throughput Agent Serving | https://arxiv.org/abs/2611.26980 |  | 本文提出了名为 Contexture 的架构，该架构通过结合工具执行信息（用于识别被后续操作覆盖的冗余上下文）与对共享 KV 缓存压力和前缀驻留状态的全局可见性，实现了一种无需修改 harness 逻辑或模型执行、无需额外模型调用或训练的运行时上下文驱逐机制。 |
+| Average-Depth Variable Execution via Request-Local Token Routing | https://arxiv.org/abs/2611.27738 |  | 本文提出了**AVERT**，这是一种通过请求本地令牌路由实现平均深度可变执行的方法，允许不同生成的令牌在满足每个请求连续预算约束的前提下执行不同数量的 Transformer 层。 |
+| Speculative Decoding Is Less Speculative Than You Think | https://arxiv.org/abs/2611.27891 |  | 本文提出了 DICE（Draw-Informed Candidate Selection）方法，该方法通过预先采样并同步草稿阶段与验证阶段的随机性，结合现有草稿器的预测结果，将计算资源分配给当前采样运行中更可能被使用的后续内容，从而在不进行额外的草稿器训练或更改目标采样分布的情况下，实现了跨多种设置的最优解码吞吐量，最高获得 24.6pp 的速度提升。 |
