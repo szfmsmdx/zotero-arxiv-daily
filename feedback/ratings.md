@@ -1,6 +1,6 @@
 # Paper feedback and ranking seeds
 
-Scores 1–5 are explicit ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
+Scores 1–5 are explicit preference ratings. A blank score means the paper was mailed but not rated; blank-score rows are not positive seeds and contribute only a very small negative signal.
 
 | 论文名 | arXiv 页面链接 | 打分 | TLDR（核心贡献） |
 | --- | --- | ---: | --- |
@@ -147,4 +147,4 @@ Scores 1–5 are explicit ratings. A blank score means the paper was mailed but 
 | LEGOSpec: A Composable and Efficient Framework for Speculative Draft Design and Training | https://arxiv.org/abs/2611.33004 |  | 本文提出了 LEGOSpec，这是一个将推测草稿模型分解为共享统一训练基础设施的上下文、骨干网络、提议和客观函数四个可组合组件的框架，并通过系统性地分离组件效应与交互来指导 DFlux 这种结合卷积-equipped SWA-GQA 混合骨干、残差校正器和分层监督的通用草稿设计，从而在 Qwen 和 Gemma 模型上显著提升了接受长度并提高了训练吞吐量。 |
 | Norn: Context-Length-Aware Optimization of Weight and KV Cache Placement for Offloaded LLM Inference | https://arxiv.org/abs/2611.32295 |  | 本文提出了一种名为 Norn 的上下文长度感知方法，通过离线预计算多个优化了子层计算分配与权重及 KV 缓存放置的执行计划及其切换点，并在解码过程中动态切换这些计划以重叠计算与数据传输，同时针对预填充阶段采用自动选择块大小的算子主导分块预填充技术，从而在不预先知道输出长度的情况下显著降低了端到端延迟。 |
 | LoomKV: Lossless KV Cache Compression from GPU Memory to SSD for LLM Serving | https://arxiv.org/abs/2611.32954 |  | 本文提出了**LoomKV**，这是一种在不修改现有引擎的情况下，利用经过校准的每头两级 3 位编码将 BF16 KV 压缩至原始大小的 0.71 倍、FP8 KV 压缩至 0.85-0.87 倍，并通过**TileStream**实现并行 GPU 解压以支持外部缓存层级（tier 模式）和**FragPack**融合解压与解码注意力以支持 GPU 池（pool 模式）的无损 KV 缓存压缩方案。 |
-| FlashQLA: Efficient Context Parallelism for Gated DeltaNet | https://arxiv.org/abs/2611.32039 |  | 本文提出了 FlashQLA 框架，通过结合衰减感知预处理、自适应上下文并行度（Auto CP）、双层级上下文并行（Dual CP）以及针对上下文并行的内核协同设计，显著降低了边界状态预处理开销并扩展了序列级并行性，从而在单 GPU 上实现了相对于 Flash Linear Attention (FLA) 的 $1.7\times$ 至 $3.1\times$ 前向加速以及高达 $4.4\times$ 的后向加速，并在八 GPU 配置下实现了高达 $4.8\times$ 的前向加速和 $4.4\times$ 的联合前后向加速。 |
+| FlashQLA: Efficient Context Parallelism for Gated DeltaNet | https://arxiv.org/abs/2611.32039 | 5 | 本文提出了 FlashQLA 框架，通过结合衰减感知预处理、自适应上下文并行度（Auto CP）、双层级上下文并行（Dual CP）以及针对上下文并行的内核协同设计，显著降低了边界状态预处理开销并扩展了序列级并行性，从而在单 GPU 上实现了相对于 Flash Linear Attention (FLA) 的 $1.7\times$ 至 $3.1\times$ 前向加速以及高达 $4.4\times$ 的后向加速，并在八 GPU 配置下实现了高达 $4.8\times$ 的前向加速和 $4.4\times$ 的联合前后向加速。 |
